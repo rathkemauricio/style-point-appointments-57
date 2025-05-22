@@ -32,7 +32,12 @@ const Header: React.FC<HeaderProps> = ({
             <ArrowLeft size={22} className="text-barber-primary" />
           </button>
         )}
-        <h1 className="text-lg font-semibold text-barber-primary">{title}</h1>
+        <h1 
+          className="text-lg font-semibold text-barber-primary cursor-pointer" 
+          onClick={() => navigate('/')}
+        >
+          {title}
+        </h1>
       </div>
       
       {rightAction && (

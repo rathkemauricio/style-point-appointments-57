@@ -28,7 +28,7 @@ const AuthHeader: React.FC<AuthHeaderProps> = ({
             </Button>
           )}
           
-          <div className="flex items-center">
+          <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
             <img 
               src={appConfig.business.logoUrl} 
               alt="Logo" 

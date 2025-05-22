@@ -36,6 +36,10 @@
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
+    
+    --primary-color: #1A1F2C;
+    --secondary-color: #FEC6A1;
+    --accent-color: #8B5CF6;
   }
 
   .dark {
@@ -86,19 +90,19 @@
   }
   
   .title-large {
-    @apply text-2xl font-bold text-barber-primary;
+    @apply text-2xl font-bold text-barber-primary dark:text-white;
   }
   
   .title-medium {
-    @apply text-xl font-semibold text-barber-primary;
+    @apply text-xl font-semibold text-barber-primary dark:text-white;
   }
   
   .text-body {
-    @apply text-base text-barber-dark;
+    @apply text-base text-barber-dark dark:text-gray-300;
   }
   
   .text-caption {
-    @apply text-sm text-barber-dark/80;
+    @apply text-sm text-barber-dark/80 dark:text-gray-400;
   }
   
   .floating-action-button {
@@ -106,19 +110,19 @@
   }
 
   .card-shadow {
-    @apply shadow-md rounded-lg bg-white overflow-hidden;
+    @apply shadow-md rounded-lg bg-white dark:bg-gray-800 overflow-hidden;
   }
 
   .btn-primary {
-    @apply bg-barber-primary text-white py-3 px-6 rounded-md font-medium hover:bg-opacity-90 transition-all;
+    @apply bg-barber-primary dark:bg-barber-accent text-white py-3 px-6 rounded-md font-medium hover:bg-opacity-90 transition-all;
   }
 
   .btn-secondary {
-    @apply bg-barber-secondary text-barber-primary py-3 px-6 rounded-md font-medium hover:bg-opacity-90 transition-all;
+    @apply bg-barber-secondary text-barber-primary dark:bg-gray-700 dark:text-white py-3 px-6 rounded-md font-medium hover:bg-opacity-90 transition-all;
   }
 
   .input-field {
-    @apply w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-barber-accent;
+    @apply w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-barber-accent dark:bg-gray-700 dark:text-white;
   }
 
   .section-spacing {
@@ -126,7 +130,7 @@
   }
 
   .appointment-card {
-    @apply border-l-4 p-4 mb-3 bg-white rounded-md shadow-sm;
+    @apply border-l-4 p-4 mb-3 bg-white dark:bg-gray-800 rounded-md shadow-sm;
   }
 
   .appointment-card.confirmed {
@@ -142,7 +146,7 @@
   }
 
   .app-footer {
-    @apply fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-3 px-4 z-40;
+    @apply fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-3 px-4 z-40;
   }
 
   .footer-nav {
@@ -154,11 +158,11 @@
   }
 
   .nav-item-icon {
-    @apply text-2xl text-gray-500;
+    @apply text-2xl text-gray-500 dark:text-gray-400;
   }
 
   .nav-item-text {
-    @apply text-xs mt-1 text-gray-500;
+    @apply text-xs mt-1 text-gray-500 dark:text-gray-400;
   }
 
   .nav-item.active .nav-item-icon,
@@ -169,4 +173,29 @@
   .page-container {
     @apply pb-20 pt-4 px-4;
   }
+}
+
+/* Custom color variables are applied to barber colors */
+.barber-primary {
+  color: var(--primary-color);
+}
+
+.barber-secondary {
+  color: var(--secondary-color);
+}
+
+.barber-accent {
+  color: var(--accent-color);
+}
+
+.bg-barber-primary {
+  background-color: var(--primary-color);
+}
+
+.bg-barber-secondary {
+  background-color: var(--secondary-color);
+}
+
+.bg-barber-accent {
+  background-color: var(--accent-color);
 }

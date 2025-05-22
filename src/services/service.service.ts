@@ -1,102 +1,72 @@
 
-import ApiService from './api.service';
-import appConfig from '../config/appConfig';
 import { Service } from '../models/service.model';
-
-// Import mock data for development
 import { mockServices } from '../mocks/mockData';
 
 class ServiceService {
-  private api: ApiService;
+  private services: Service[] = [...mockServices];
   
-  constructor() {
-    this.api = new ApiService(appConfig.api.baseUrl, appConfig.api.timeout);
-  }
-  
-  /**
-   * Get all services
-   */
   async getServices(): Promise<Service[]> {
-    try {
-      // In a real app, we'd call the API
-      // const response = await this.api.get('/services');
-      
-      // For development, we're using mock data
-      return mockServices;
-    } catch (error) {
-      console.error('Failed to fetch services:', error);
-      return [];
-    }
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(this.services);
+      }, 500);
+    });
   }
   
-  /**
-   * Get service by ID
-   */
-  async getServiceById(id: string): Promise<Service | null> {
-    try {
-      // In a real app, we'd call the API
-      // const response = await this.api.get(`/services/${id}`);
-      
-      // For development, we're using mock data
-      const service = mockServices.find(s => s.id === id);
-      return service || null;
-    } catch (error) {
-      console.error(`Failed to fetch service ${id}:`, error);
-      return null;
-    }
+  async getServiceById(id: string): Promise<Service | undefined> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const service = this.services.find((s) => s.id === id);
+        resolve(service);
+      }, 300);
+    });
   }
   
-  /**
-   * Create a new service
-   */
-  async createService(data: Omit<Service, 'id'>): Promise<Service | null> {
-    try {
-      // In a real app, we'd call the API
-      // const response = await this.api.post('/services', data);
-      
-      // For development, we simulate a successful creation
-      const newService: Service = {
-        ...data,
-        id: `new-${Date.now()}`
-      };
-      
-      return newService;
-    } catch (error) {
-      console.error('Failed to create service:', error);
-      return null;
-    }
+  async createService(service: Omit<Service, 'id'>): Promise<Service> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const newService: Service = {
+          id: `service-${Date.now()}`,
+          ...service
+        };
+        
+        this.services.push(newService);
+        resolve(newService);
+      }, 300);
+    });
   }
   
-  /**
-   * Update an existing service
-   */
-  async updateService(id: string, data: Partial<Service>): Promise<boolean> {
-    try {
-      // In a real app, we'd call the API
-      // await this.api.put(`/services/${id}`, data);
-      
-      // For development, we simulate a successful update
-      return true;
-    } catch (error) {
-      console.error(`Failed to update service ${id}:`, error);
-      return false;
-    }
+  async updateService(id: string, data: Partial<Service>): Promise<Service> {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const index = this.services.findIndex((s) => s.id === id);
+        if (index === -1) {
+          reject(new Error('Service not found'));
+          return;
+        }
+        
+        this.services[index] = {
+          ...this.services[index],
+          ...data
+        };
+        
+        resolve(this.services[index]);
+      }, 300);
+    });
   }
   
-  /**
-   * Delete a service
-   */
   async deleteService(id: string): Promise<boolean> {
-    try {
-      // In a real app, we'd call the API
-      // await this.api.delete(`/services/${id}`);
-      
-      // For development, we simulate a successful deletion
-      return true;
-    } catch (error) {
-      console.error(`Failed to delete service ${id}:`, error);
-      return false;
-    }
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const index = this.services.findIndex((s) => s.id === id);
+        if (index !== -1) {
+          this.services.splice(index, 1);
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      }, 300);
+    });
   }
 }
 
