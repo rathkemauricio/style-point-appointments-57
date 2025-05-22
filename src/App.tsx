@@ -15,9 +15,17 @@ import AgendaPage from "./pages/AgendaPage";
 import AppointmentBookingPage from "./pages/AppointmentBookingPage";
 import ServicesPage from "./pages/ServicesPage";
 import StatsPage from "./pages/StatsPage";
+import ConfigPage from "./pages/ConfigPage";
 import LoginPage from "./pages/LoginPage";
-import PortalPage from "./pages/portal/PortalPage";
 import NotFound from "./pages/NotFound";
+
+// Portal Pages
+import PortalPage from "./pages/portal/PortalPage";
+import PortalAgendaPage from "./pages/portal/PortalAgendaPage";
+import PortalServicesPage from "./pages/portal/PortalServicesPage";
+import PortalRevenuePage from "./pages/portal/PortalRevenuePage";
+import PortalCustomersPage from "./pages/portal/PortalCustomersPage";
+import PortalReviewsPage from "./pages/portal/PortalReviewsPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -42,11 +50,37 @@ const App = () => (
             <Route path="/agendar" element={<AppointmentBookingPage />} />
             <Route path="/servicos" element={<ServicesPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/config" element={<ConfigPage />} />
             
             {/* Rotas protegidas - Portal do Profissional */}
             <Route path="/portal" element={
               <ProtectedRoute requiredRole="professional">
                 <PortalPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/portal/agenda" element={
+              <ProtectedRoute requiredRole="professional">
+                <PortalAgendaPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/portal/services" element={
+              <ProtectedRoute requiredRole="professional">
+                <PortalServicesPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/portal/revenue" element={
+              <ProtectedRoute requiredRole="professional">
+                <PortalRevenuePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/portal/customers" element={
+              <ProtectedRoute requiredRole="professional">
+                <PortalCustomersPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/portal/reviews" element={
+              <ProtectedRoute requiredRole="professional">
+                <PortalReviewsPage />
               </ProtectedRoute>
             } />
             
