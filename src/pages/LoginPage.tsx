@@ -121,7 +121,8 @@ const LoginPage: React.FC = () => {
           
           <div className="mt-4 text-sm text-center text-muted-foreground">
             <p>Use as seguintes credenciais para teste:</p>
-            <p className="font-mono text-xs mt-1">joao@barbearia.com / 123456</p>
+            <p className="font-mono text-xs mt-1 font-bold">joao@barbearia.com / 123456</p>
+            <p className="text-xs mt-2">Esta é uma versão de demonstração para profissionais acessarem seu portal.</p>
           </div>
         </div>
       </div>

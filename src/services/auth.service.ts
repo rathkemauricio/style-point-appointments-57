@@ -26,6 +26,30 @@ class AuthService {
       const professional = mockProfessionals.find(p => 
         `${p.name.toLowerCase().replace(/\s/g, '')}@barbearia.com` === credentials.email);
       
+      // Para teste, permitir login com as credenciais de exemplo
+      if (credentials.email === 'joao@barbearia.com' && credentials.password === '123456') {
+        // Usar o primeiro profissional como exemplo para o login de teste
+        const testProfessional = mockProfessionals[0];
+        
+        const authUser: AuthUser = {
+          id: `user-${testProfessional.id}`,
+          email: credentials.email,
+          role: 'professional',
+          professionalId: testProfessional.id,
+        };
+        
+        const response: LoginResponse = {
+          user: authUser,
+          token: `mock-token-${Date.now()}`
+        };
+        
+        // Salva na localStorage
+        localStorage.setItem(this.TOKEN_KEY, response.token);
+        localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
+        
+        return response;
+      }
+      
       if (!professional) {
         throw new Error('Credenciais inválidas');
       }

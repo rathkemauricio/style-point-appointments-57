@@ -1,11 +1,13 @@
 
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, Calendar, Settings, User } from "lucide-react";
+import { Home, Calendar, Settings, User, LogIn } from "lucide-react";
+import { useAuth } from '../hooks/use-auth';
 
 const Footer: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -30,13 +32,23 @@ const Footer: React.FC = () => {
           <span className="nav-item-text">Agenda</span>
         </div>
         
-        <div 
-          className={`nav-item ${isActive('/perfil') ? 'active' : ''}`}
-          onClick={() => navigate('/perfil')}
-        >
-          <User className="nav-item-icon" size={22} />
-          <span className="nav-item-text">Perfil</span>
-        </div>
+        {!isAuthenticated ? (
+          <div 
+            className={`nav-item ${isActive('/login') ? 'active' : ''}`}
+            onClick={() => navigate('/login')}
+          >
+            <LogIn className="nav-item-icon" size={22} />
+            <span className="nav-item-text">Login</span>
+          </div>
+        ) : (
+          <div 
+            className={`nav-item ${isActive('/portal') ? 'active' : ''}`}
+            onClick={() => navigate('/portal')}
+          >
+            <User className="nav-item-icon" size={22} />
+            <span className="nav-item-text">Portal</span>
+          </div>
+        )}
         
         <div 
           className={`nav-item ${isActive('/config') ? 'active' : ''}`}
