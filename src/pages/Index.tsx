@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import appConfig from '../config/appConfig';
@@ -39,23 +38,23 @@ const Index = () => {
       <div className="flex-1 page-container">
         {/* Business Info */}
         <div className="mb-6">
-          <p className="text-barber-dark/80">{appConfig.business.description}</p>
+          <p className="text-foreground/80">{appConfig.business.description}</p>
           <div className="mt-2 flex items-center text-sm">
-            <span className="mr-3 text-barber-dark/70">{appConfig.business.openHours}</span>
-            <span className="text-barber-dark/70">{appConfig.business.phone}</span>
+            <span className="mr-3 text-foreground/70">{appConfig.business.openHours}</span>
+            <span className="text-foreground/70">{appConfig.business.phone}</span>
           </div>
         </div>
         
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-3 mb-6">
           <button 
-            className="btn-primary flex-1"
+            className="bg-primary text-white py-2 px-4 rounded-lg hover:bg-accent transition-colors"
             onClick={handleNewAppointment}
           >
             Agendar Agora
           </button>
           <button 
-            className="btn-secondary flex-1"
+            className="bg-secondary text-primary py-2 px-4 rounded-lg hover:bg-accent/20 transition-colors"
             onClick={() => navigate('/servicos')}
           >
             Nossos Serviços
@@ -64,7 +63,7 @@ const Index = () => {
         
         {/* Featured Services */}
         <div className="section-spacing">
-          <h2 className="title-medium mb-3">Serviços Populares</h2>
+          <h2 className="text-lg font-semibold text-primary mb-3">Serviços Populares</h2>
           {services.slice(0, 2).map(service => (
             <ServiceCard 
               key={service.id} 
@@ -75,7 +74,7 @@ const Index = () => {
           ))}
           {services.length > 2 && (
             <button 
-              className="w-full text-center py-2 text-barber-accent hover:underline"
+              className="w-full text-center py-2 text-accent hover:text-primary transition-colors"
               onClick={() => navigate('/servicos')}
             >
               Ver todos os serviços
@@ -85,7 +84,7 @@ const Index = () => {
         
         {/* Location Map */}
         <div className="section-spacing">
-          <h2 className="title-medium mb-3">Nossa Localização</h2>
+          <h2 className="text-lg font-semibold text-primary mb-3">Nossa Localização</h2>
           <MapLocation 
             latitude={appConfig.business.latitude}
             longitude={appConfig.business.longitude}

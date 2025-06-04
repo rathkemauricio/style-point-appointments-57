@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -40,9 +39,10 @@ const serviceFormSchema = z.object({
   description: z.string().optional(),
   price: z.coerce.number().min(0, 'Preço deve ser maior ou igual a zero'),
   durationMinutes: z.coerce.number().min(5, 'Duração mínima de 5 minutos'),
-  category: z.string().optional(),
   imageUrl: z.string().optional(),
-});
+  category: z.string().optional(),
+  isActive: z.boolean().default(true)
+}).required();
 
 type ServiceFormValues = z.infer<typeof serviceFormSchema>;
 
@@ -73,6 +73,7 @@ const PortalServicesPage: React.FC = () => {
       durationMinutes: 30,
       category: '',
       imageUrl: '',
+      isActive: true
     },
   });
   
@@ -135,7 +136,16 @@ const PortalServicesPage: React.FC = () => {
         });
       } else {
         // Criar novo serviço
-        await serviceService.createService(data);
+        const serviceData = {
+          name: data.name,
+          price: data.price,
+          durationMinutes: data.durationMinutes,
+          isActive: true,
+          description: data.description,
+          imageUrl: data.imageUrl,
+          category: data.category
+        };
+        await serviceService.createService(serviceData);
         toast({
           title: "Serviço criado",
           description: "Novo serviço foi criado com sucesso",

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Service } from '../models/service.model';
 import { formatCurrency } from '../utils/formatUtils';
@@ -28,7 +27,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
       className={`
         card-shadow mb-4 transition-all
         ${selectable ? 'cursor-pointer hover:shadow-lg transform hover:-translate-y-1' : ''}
-        ${selected ? 'border-2 border-barber-accent' : ''}
+        ${selected ? 'border-2 border-accent' : ''}
       `}
       onClick={handleClick}
     >
@@ -44,8 +43,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
         )}
         <div className="flex-1 p-4">
           <div className="flex justify-between">
-            <h3 className="text-lg font-semibold text-barber-primary">{service.name}</h3>
-            <span className="font-bold text-barber-primary">{formatCurrency(service.price)}</span>
+            <h3 className="text-lg font-semibold text-primary">{service.name}</h3>
+            <span className="font-bold text-primary">{formatCurrency(service.price)}</span>
           </div>
           <p className="text-sm text-gray-600 mt-1">{service.description}</p>
           <div className="mt-2 flex justify-between items-center">
@@ -53,7 +52,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               Duração: {formatDuration(service.durationMinutes)}
             </span>
             {service.category && (
-              <span className="bg-barber-secondary/20 text-xs px-2 py-1 rounded-full text-barber-primary">
+              <span className="bg-secondary text-xs px-2 py-1 rounded-full text-primary">
                 {service.category}
               </span>
             )}

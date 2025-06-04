@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
@@ -23,7 +22,12 @@ const AuthHeader: React.FC<AuthHeaderProps> = ({
       <div className="container mx-auto max-w-7xl flex justify-between items-center">
         <div className="flex items-center space-x-4">
           {showBackButton && (
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => navigate(-1)}
+              style={{ color: 'var(--primary-color)' }}
+            >
               <ArrowLeft className="h-5 w-5" />
             </Button>
           )}
@@ -34,7 +38,7 @@ const AuthHeader: React.FC<AuthHeaderProps> = ({
               alt="Logo" 
               className="h-8 w-8 rounded-full object-cover mr-3" 
             />
-            <h1 className="text-xl font-bold">{title}</h1>
+            <h1 className="text-xl font-bold text-primary">{title}</h1>
           </div>
         </div>
         

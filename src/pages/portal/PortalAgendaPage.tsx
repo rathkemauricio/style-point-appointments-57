@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Calendar, Filter } from 'lucide-react';
 import { format, addDays, isToday, startOfWeek, endOfWeek, addWeeks, subWeeks, startOfMonth, endOfMonth, addMonths, subMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useAuth } from '../../hooks/use-auth';
 
 import AuthHeader from '../../components/AuthHeader';
 import Footer from '../../components/Footer';
@@ -34,6 +34,7 @@ type DateRange = {
 
 const PortalAgendaPage: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [periodFilter, setPeriodFilter] = useState<'dia' | 'semana' | 'mes'>('semana');
   const [currentDate, setCurrentDate] = useState(new Date());
   
@@ -96,11 +97,11 @@ const PortalAgendaPage: React.FC = () => {
   // Buscar agendamentos para o período selecionado
   const { data: appointments = [], isLoading } = useQuery({
     queryKey: ['professional-appointments', dateRange.startDate, dateRange.endDate],
-    queryFn: () => appointmentService.getAppointments({
-      startDate: dateRange.startDate,
-      endDate: dateRange.endDate,
-      professionalId: 'current' // O serviço vai identificar o profissional logado
-    })
+    queryFn: () => appointmentService.getAppointmentsByProfessionalId(
+      user?.professionalId || '',
+      dateRange.startDate,
+      dateRange.endDate
+    )
   });
   
   // Agrupar agendamentos por data

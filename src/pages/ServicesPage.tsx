@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -45,7 +44,7 @@ const ServicesPage: React.FC = () => {
               className="p-2 rounded-full hover:bg-gray-100"
               onClick={() => navigate('/servicos/gerenciar')}
             >
-              <Settings size={20} className="text-barber-primary" />
+              <Settings size={20} className="text-primary" />
             </button>
           ) : null
         }
@@ -54,7 +53,7 @@ const ServicesPage: React.FC = () => {
       <div className="flex-1 page-container">
         {Object.keys(servicesByCategory).map(category => (
           <div key={category} className="mb-6">
-            <h2 className="title-medium mb-3">{category}</h2>
+            <h2 className="text-lg font-semibold text-primary mb-3">{category}</h2>
             
             {servicesByCategory[category].map(service => (
               <ServiceCard 
@@ -72,7 +71,7 @@ const ServicesPage: React.FC = () => {
             <p className="text-gray-500">Nenhum serviço cadastrado</p>
             {isAdmin && (
               <button
-                className="mt-4 text-barber-accent"
+                className="mt-4 text-primary hover:text-primary/80 transition-colors"
                 onClick={handleNewService}
               >
                 Cadastrar serviços

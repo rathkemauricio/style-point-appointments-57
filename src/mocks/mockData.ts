@@ -11,7 +11,7 @@ export const mockServices: Service[] = [
     description: 'Corte moderno para todos os estilos',
     price: 40,
     durationMinutes: 30,
-    imageUrl: 'https://images.unsplash.com/photo-1589710751893-f9ab392e1b2c',
+    imageUrl: 'https://images.unsplash.com/photo-1621605815971-fbc98d665033',
     isActive: true,
     category: 'Cabelo'
   },
@@ -31,7 +31,7 @@ export const mockServices: Service[] = [
     description: 'Combo completo',
     price: 60,
     durationMinutes: 45,
-    imageUrl: 'https://images.unsplash.com/photo-1599351431671-ac1da876b74c',
+    imageUrl: 'https://images.unsplash.com/photo-1621605815971-fbc98d665033',
     isActive: true,
     category: 'Combo'
   },
@@ -41,7 +41,7 @@ export const mockServices: Service[] = [
     description: 'Coloração com produtos de qualidade',
     price: 80,
     durationMinutes: 60,
-    imageUrl: 'https://images.unsplash.com/photo-1605497788044-5a32c7078486',
+    imageUrl: 'https://images.unsplash.com/photo-1621605815971-fbc98d665033',
     isActive: true,
     category: 'Tratamento'
   }

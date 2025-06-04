@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from "lucide-react";
@@ -29,12 +28,13 @@ const Header: React.FC<HeaderProps> = ({
             className="p-1 mr-2 rounded-full hover:bg-gray-100"
             aria-label="Voltar"
           >
-            <ArrowLeft size={22} className="text-barber-primary" />
+            <ArrowLeft size={22} style={{ color: 'var(--primary-color)' }} />
           </button>
         )}
         <h1 
-          className="text-lg font-semibold text-barber-primary cursor-pointer" 
+          className="text-lg font-semibold cursor-pointer" 
           onClick={() => navigate('/')}
+          style={{ color: 'var(--primary-color)' }}
         >
           {title}
         </h1>

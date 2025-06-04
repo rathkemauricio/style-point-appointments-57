@@ -22,10 +22,9 @@ const AgendaPage: React.FC = () => {
   // Fetch appointments for the selected period
   const { data: appointments = [] } = useQuery({
     queryKey: ['appointments', startDate, endDate],
-    queryFn: () => appointmentService.getAppointments({
-      startDate,
-      endDate
-    })
+    queryFn: async () => {
+      return await appointmentService.getAppointments(startDate, endDate);
+    }
   });
   
   // Group appointments by date

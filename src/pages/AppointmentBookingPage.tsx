@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
@@ -17,7 +16,7 @@ import { Service } from '../models/service.model';
 import { Professional } from '../models/professional.model';
 import { formatDate, getNextDays } from '../utils/dateUtils';
 import { formatPhoneNumber, normalizePhoneNumber } from '../utils/formatUtils';
-import { AppointmentFormData } from '../models/appointment.model';
+import { AppointmentFormData, AppointmentStatus } from '../models/appointment.model';
 
 const STEPS = ['service', 'professional', 'datetime', 'customer', 'confirm'];
 
@@ -85,7 +84,22 @@ const AppointmentBookingPage: React.FC = () => {
       }
       
       // Create appointment
-      return appointmentService.createAppointment(data);
+      if (!data.customerId) throw new Error('Customer ID is required');
+      
+      const appointmentData = {
+        date: data.date,
+        startTime: data.startTime,
+        endTime: data.startTime, // Será calculado pelo serviço
+        customerId: data.customerId,
+        professionalId: data.professionalId,
+        serviceIds: data.serviceIds,
+        notes: data.notes,
+        status: 'pending' as AppointmentStatus,
+        createdAt: new Date().toISOString(),
+        totalPrice: selectedServices.reduce((total, service) => total + service.price, 0)
+      };
+
+      return appointmentService.createAppointment(appointmentData);
     },
     onSuccess: () => {
       toast.success('Agendamento realizado com sucesso!');
@@ -264,8 +278,8 @@ const AppointmentBookingPage: React.FC = () => {
                     key={date}
                     className={`flex flex-col items-center min-w-[4.5rem] p-2 rounded-lg cursor-pointer ${
                       selectedDate === date 
-                        ? 'bg-barber-primary text-white' 
-                        : 'bg-gray-100'
+                        ? 'bg-primary text-white' 
+                        : 'bg-gray-100 hover:bg-gray-200'
                     }`}
                     onClick={() => handleSelectDate(date)}
                   >
@@ -291,15 +305,15 @@ const AppointmentBookingPage: React.FC = () => {
                   </div>
                 ) : (
                   <div className="grid grid-cols-3 gap-2">
-                    {availability?.slots
-                      .filter(slot => slot.isAvailable)
+                    {availability
+                      ?.filter(slot => slot.isAvailable)
                       .map(slot => (
                         <div
                           key={slot.startTime}
                           className={`py-2 px-3 text-center rounded-lg cursor-pointer ${
                             selectedTimeSlot === slot.startTime
-                              ? 'bg-barber-primary text-white'
-                              : 'bg-gray-100'
+                              ? 'bg-primary text-white'
+                              : 'bg-gray-100 hover:bg-gray-200'
                           }`}
                           onClick={() => handleSelectTimeSlot(slot.startTime)}
                         >
@@ -376,14 +390,14 @@ const AppointmentBookingPage: React.FC = () => {
             
             <div className="card-shadow p-4 mb-4">
               <div className="flex items-center mb-3">
-                <Calendar size={20} className="text-barber-primary mr-2" />
+                <Calendar size={20} className="text-primary mr-2" />
                 <span className="font-medium">
                   {selectedDate ? formatDate(selectedDate) : ''} às {formData.startTime}
                 </span>
               </div>
               
               <div className="flex items-center mb-3">
-                <User size={20} className="text-barber-primary mr-2" />
+                <User size={20} className="text-primary mr-2" />
                 <span>{selectedProfessional?.name}</span>
               </div>
               
@@ -444,63 +458,101 @@ const AppointmentBookingPage: React.FC = () => {
   };
   
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header 
-        title="Agendar Horário" 
-        showBackButton={true}
-      />
+    <div className="min-h-screen bg-background">
+      <Header title="Agendar Horário" showBackButton />
       
-      <div className="flex-1 page-container pb-24">
-        {/* Progress Steps */}
-        <div className="flex justify-between mb-6 px-2">
-          {STEPS.map((step, index) => (
-            <div 
-              key={step}
-              className={`flex flex-col items-center ${
-                index > 0 ? 'flex-1' : ''
-              }`}
-            >
+      {/* Progress Steps */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex justify-between">
+            {STEPS.map((step, index) => (
               <div 
-                className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                  index === currentStep 
-                    ? 'bg-barber-primary text-white' 
-                    : index < currentStep 
-                      ? 'bg-barber-success text-white' 
-                      : 'bg-gray-200 text-gray-500'
+                key={step}
+                className={`flex items-center ${
+                  index < currentStep ? 'text-primary' :
+                  index === currentStep ? 'text-primary' :
+                  'text-gray-400'
                 }`}
               >
-                {index < currentStep ? (
-                  <Check size={14} />
-                ) : (
-                  <span className="text-xs">{index + 1}</span>
-                )}
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center border ${
+                  index < currentStep ? 'bg-primary border-primary text-white' :
+                  index === currentStep ? 'bg-primary border-primary text-white' :
+                  'border-gray-300'
+                }`}>
+                  {index < currentStep ? <Check size={16} /> : index + 1}
+                </div>
+                <span className="ml-2 hidden sm:inline">{step}</span>
               </div>
-              
-              {index < STEPS.length - 1 && (
-                <div 
-                  className={`h-0.5 w-full mt-3 ${
-                    index < currentStep ? 'bg-barber-success' : 'bg-gray-200'
-                  }`} 
-                />
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-        
+      </div>
+
+      <div className="container mx-auto px-4 py-6">
+        {/* Botões de navegação */}
+        <div className="flex justify-between mb-6">
+          {currentStep > 0 && (
+            <button
+              onClick={handlePreviousStep}
+              className="px-4 py-2 text-gray-600 hover:text-gray-800 rounded-md transition-colors"
+            >
+              Voltar
+            </button>
+          )}
+          {currentStep < STEPS.length - 1 && formData.serviceIds.length > 0 && (
+            <button
+              onClick={handleNextStep}
+              className="px-4 py-2 bg-primary text-white hover:opacity-90 rounded-md transition-opacity ml-auto"
+            >
+              Continuar
+            </button>
+          )}
+        </div>
+
+        {/* Seleção de data */}
+        {currentStep === 2 && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
+            {nextDates.map(date => (
+              <button
+                key={date}
+                onClick={() => handleSelectDate(date)}
+                className={`p-3 rounded-lg text-center transition-colors ${
+                  selectedDate === date
+                    ? 'bg-primary text-white'
+                    : 'bg-gray-100 hover:bg-gray-200'
+                }`}
+              >
+                {formatDate(date)}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Seleção de horário */}
+        {currentStep === 2 && selectedDate && availability && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4">
+            {availability
+              .filter(slot => slot.isAvailable)
+              .map(slot => (
+                <button
+                  key={slot.startTime}
+                  onClick={() => handleSelectTimeSlot(slot.startTime)}
+                  className={`p-3 rounded-lg text-center transition-colors ${
+                    selectedTimeSlot === slot.startTime
+                      ? 'bg-primary text-white'
+                      : 'bg-gray-100 hover:bg-gray-200'
+                  }`}
+                >
+                  {slot.startTime}
+                </button>
+              ))}
+          </div>
+        )}
+
         {/* Step Content */}
         <div>
           {renderStep()}
         </div>
-        
-        {/* Back Button (if not first step) */}
-        {currentStep > 0 && (
-          <button
-            className="mt-6 py-2 px-4 text-barber-primary"
-            onClick={handlePreviousStep}
-          >
-            Voltar
-          </button>
-        )}
       </div>
     </div>
   );

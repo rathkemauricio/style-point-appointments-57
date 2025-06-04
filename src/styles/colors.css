@@ -1,0 +1,93 @@
+:root {
+  --primary-color: #8B5CF6;
+  --secondary-color: #E5DEFF;
+  --accent-color: #7E69AB;
+  --success-color: #10B981;
+  --error-color: #EF4444;
+  --warning-color: #F59E0B;
+}
+
+.text-primary {
+  color: var(--primary-color);
+}
+
+.text-secondary {
+  color: var(--secondary-color);
+}
+
+.text-accent {
+  color: var(--accent-color);
+}
+
+.bg-primary {
+  background-color: var(--primary-color);
+}
+
+.bg-secondary {
+  background-color: var(--secondary-color);
+}
+
+.bg-accent {
+  background-color: var(--accent-color);
+}
+
+.border-primary {
+  border-color: var(--primary-color);
+}
+
+.border-secondary {
+  border-color: var(--secondary-color);
+}
+
+.border-accent {
+  border-color: var(--accent-color);
+}
+
+/* Status colors */
+.status-pending {
+  background-color: var(--warning-color);
+  color: white;
+}
+
+.status-confirmed {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.status-cancelled {
+  background-color: var(--error-color);
+  color: white;
+}
+
+/* Card styles */
+.card-shadow {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  background-color: white;
+}
+
+.card-shadow:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Floating action button */
+.floating-action-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.floating-action-button:hover {
+  transform: scale(1.05);
+  background-color: var(--accent-color);
+} 

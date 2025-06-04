@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
@@ -33,10 +32,10 @@ const StatsPage: React.FC = () => {
       
       <div className="flex-1 page-container">
         {/* Period Toggle */}
-        <div className="flex rounded-lg bg-gray-100 p-1 mb-6">
+        <div className="flex rounded-lg bg-secondary p-1 mb-6">
           <button
             className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
-              timePeriod === 'week' ? 'bg-white shadow-sm' : 'text-gray-600'
+              timePeriod === 'week' ? 'bg-white shadow-sm text-primary' : 'text-gray-600'
             }`}
             onClick={() => setTimePeriod('week')}
           >
@@ -44,7 +43,7 @@ const StatsPage: React.FC = () => {
           </button>
           <button
             className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
-              timePeriod === 'month' ? 'bg-white shadow-sm' : 'text-gray-600'
+              timePeriod === 'month' ? 'bg-white shadow-sm text-primary' : 'text-gray-600'
             }`}
             onClick={() => setTimePeriod('month')}
           >
@@ -52,7 +51,7 @@ const StatsPage: React.FC = () => {
           </button>
           <button
             className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
-              timePeriod === 'year' ? 'bg-white shadow-sm' : 'text-gray-600'
+              timePeriod === 'year' ? 'bg-white shadow-sm text-primary' : 'text-gray-600'
             }`}
             onClick={() => setTimePeriod('year')}
           >
@@ -64,14 +63,14 @@ const StatsPage: React.FC = () => {
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div className="card-shadow p-4">
             <span className="block text-sm text-gray-500">Total de atendimentos</span>
-            <span className="block text-2xl font-bold text-barber-primary mt-1">
+            <span className="block text-2xl font-bold text-primary mt-1">
               {isLoading ? '-' : stats?.total || 0}
             </span>
           </div>
           
           <div className="card-shadow p-4">
             <span className="block text-sm text-gray-500">Faturamento</span>
-            <span className="block text-2xl font-bold text-barber-primary mt-1">
+            <span className="block text-2xl font-bold text-primary mt-1">
               {isLoading ? '-' : formatCurrency(stats?.revenue || 0)}
             </span>
           </div>
@@ -79,7 +78,7 @@ const StatsPage: React.FC = () => {
         
         {/* Chart */}
         <div className="card-shadow p-4 mb-6">
-          <h2 className="text-lg font-semibold mb-4">Serviços mais populares</h2>
+          <h2 className="text-lg font-semibold mb-4 text-primary">Serviços mais populares</h2>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
@@ -102,7 +101,7 @@ const StatsPage: React.FC = () => {
                 />
                 <Bar 
                   dataKey="value" 
-                  fill="#8B5CF6" 
+                  fill="var(--primary-color)"
                   radius={[4, 4, 0, 0]}
                 />
               </BarChart>

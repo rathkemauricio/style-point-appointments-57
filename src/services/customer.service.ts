@@ -1,4 +1,3 @@
-
 import { Customer } from '../models/customer.model';
 import { mockCustomers } from '../mocks/mockData';
 
@@ -47,6 +46,32 @@ class CustomerService {
         const newCustomer = {
           id: `customer-${Date.now()}`,
           ...customer
+        };
+        
+        this.customers.push(newCustomer);
+        resolve(newCustomer);
+      }, 300);
+    });
+  }
+
+  async findCustomerByPhone(phone: string): Promise<Customer | null> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const customer = this.customers.find(c => c.phone === phone);
+        resolve(customer || null);
+      }, 300);
+    });
+  }
+
+  async createCustomer(name: string, phone: string): Promise<Customer> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const newCustomer: Customer = {
+          id: `customer-${Date.now()}`,
+          name,
+          phone,
+          createdAt: new Date().toISOString(),
+          totalAppointments: 0
         };
         
         this.customers.push(newCustomer);

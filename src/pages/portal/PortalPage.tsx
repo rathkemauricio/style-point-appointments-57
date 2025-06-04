@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Calendar, Scissors, DollarSign, Star, Users } from 'lucide-react';
@@ -27,15 +26,21 @@ const PortalPage: React.FC = () => {
   const today = new Date().toISOString().split('T')[0];
   const { data: stats } = useQuery({
     queryKey: ['stats', today],
-    queryFn: () => {
+    queryFn: async () => {
       const startDate = new Date();
       startDate.setDate(1); // Primeiro dia do mês atual
       const endDate = new Date();
       
-      return appointmentService.getStats(
+      const appointments = await appointmentService.getAppointmentsByProfessionalId(
+        user?.professionalId || '',
         startDate.toISOString().split('T')[0],
         endDate.toISOString().split('T')[0]
       );
+
+      return {
+        total: appointments.length,
+        revenue: appointments.reduce((sum, apt) => sum + (apt.totalPrice || 0), 0)
+      };
     }
   });
   

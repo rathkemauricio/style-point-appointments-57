@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bell, Moon, Sun, PaintBucket, Clock, LogOut, Save } from 'lucide-react';
@@ -8,38 +7,38 @@ import Footer from '../components/Footer';
 import { Card, CardContent } from '../components/ui/card';
 import { Switch } from '../components/ui/switch';
 import { Button } from '../components/ui/button';
-import { Separator } from '../components/ui/separator';
 import { useToast } from '../components/ui/use-toast';
 import { useAuth } from '../hooks/use-auth';
+import { useSettings } from '../hooks/use-settings';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { TimePickerInput } from '../components/TimePickerInput';
 import { Toggle } from '../components/ui/toggle';
+import { UserSettings } from '../models/user-settings.model';
 
 const colorOptions = [
-  { name: 'Roxo', primary: '#8B5CF6', secondary: '#E5DEFF', accent: '#7E69AB' },
-  { name: 'Azul', primary: '#0EA5E9', secondary: '#D3E4FD', accent: '#3B82F6' },
-  { name: 'Verde', primary: '#10B981', secondary: '#F2FCE2', accent: '#059669' },
-  { name: 'Laranja', primary: '#F97316', secondary: '#FDE1D3', accent: '#EA580C' },
-  { name: 'Rosa', primary: '#D946EF', secondary: '#FFDEE2', accent: '#EC4899' },
+  { name: 'Caramelo', primary: '#C4804E', secondary: '#FBE6D4', accent: '#8B4513' },
+  { name: 'Marrom Escuro', primary: '#8B4513', secondary: '#2C1810', accent: '#C4804E' },
+  { name: 'Marrom Médio', primary: '#A0522D', secondary: '#DEB887', accent: '#8B4513' },
+  { name: 'Marrom Claro', primary: '#D2691E', secondary: '#FFE4C4', accent: '#8B4513' },
+  { name: 'Caramelo Dourado', primary: '#CD853F', secondary: '#F5DEB3', accent: '#8B4513' },
 ];
 
 const ConfigPage: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { logout, isAuthenticated, user } = useAuth();
+  const { settings, updateSettings } = useSettings();
   
   // Estados para as configurações
-  const [darkMode, setDarkMode] = useState(false);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [appointmentReminders, setAppointmentReminders] = useState(true);
-  const [reviewNotifications, setReviewNotifications] = useState(true);
+  const [darkMode, setDarkMode] = useState<boolean>(settings?.theme.isDarkMode ?? false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(settings?.notifications.enabled ?? true);
+  const [appointmentReminders, setAppointmentReminders] = useState<boolean>(settings?.notifications.appointments ?? true);
+  const [reviewNotifications, setReviewNotifications] = useState<boolean>(settings?.notifications.reviews ?? true);
   
-  // Estados para horários de trabalho
-  const [startTime, setStartTime] = useState('09:00');
-  const [endTime, setEndTime] = useState('19:00');
-  const [workDays, setWorkDays] = useState({
+  // Estados para horários de trabalho (apenas para profissionais)
+  const [startTime, setStartTime] = useState(settings?.workHours?.startTime || '09:00');
+  const [endTime, setEndTime] = useState(settings?.workHours?.endTime || '19:00');
+  const [workDays, setWorkDays] = useState(settings?.workHours?.workDays || {
     monday: true,
     tuesday: true,
     wednesday: true,
@@ -49,47 +48,104 @@ const ConfigPage: React.FC = () => {
     sunday: false,
   });
   
-  // Estado para o tema de cores
-  const [selectedColorTheme, setSelectedColorTheme] = useState(0);
-  
-  // Efeito para aplicar o modo escuro
+  // Estado para o tema de cores (apenas para profissionais e admins)
+  const [selectedColorTheme, setSelectedColorTheme] = useState(settings?.theme.colorTheme || 0);
+
+  // Verificar se é profissional ou admin
+  const isProfessional = user?.role === 'professional';
+  const isAdmin = user?.role === 'admin';
+  const canCustomizeAppearance = isProfessional || isAdmin;
+
+  // Atualizar estados quando as configurações mudarem
   useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+    if (settings) {
+      setDarkMode(settings.theme.isDarkMode);
+      if (canCustomizeAppearance) {
+        setSelectedColorTheme(settings.theme.colorTheme);
+      }
+      setNotificationsEnabled(settings.notifications.enabled);
+      setAppointmentReminders(settings.notifications.appointments);
+      setReviewNotifications(settings.notifications.reviews);
+      
+      if (isProfessional && settings.workHours) {
+        setStartTime(settings.workHours.startTime);
+        setEndTime(settings.workHours.endTime);
+        setWorkDays(settings.workHours.workDays);
+      }
     }
-  }, [darkMode]);
+  }, [settings, canCustomizeAppearance, isProfessional]);
+
+  // Função auxiliar para salvar configurações
+  const saveSettings = () => {
+    if (!user?.id) return;
+
+    const newSettings: UserSettings = {
+      userId: user.id,
+      theme: {
+        colorTheme: canCustomizeAppearance ? selectedColorTheme : 0,
+        isDarkMode: darkMode
+      },
+      notifications: {
+        enabled: notificationsEnabled,
+        appointments: appointmentReminders,
+        reviews: reviewNotifications
+      },
+      workHours: isProfessional ? {
+        startTime,
+        endTime,
+        workDays
+      } : undefined
+    };
+
+    updateSettings(newSettings);
+  };
   
   // Handle para trocar o modo escuro/claro
   const handleToggleDarkMode = () => {
-    setDarkMode(!darkMode);
+    const newDarkMode = !darkMode;
+    setDarkMode(newDarkMode);
+    if (user?.id) {
+      const newSettings: UserSettings = {
+        userId: user.id,
+        theme: {
+          colorTheme: selectedColorTheme,
+          isDarkMode: newDarkMode
+        },
+        notifications: {
+          enabled: notificationsEnabled,
+          appointments: appointmentReminders,
+          reviews: reviewNotifications
+        },
+        workHours: {
+          startTime,
+          endTime,
+          workDays
+        }
+      };
+      updateSettings(newSettings);
+    }
     toast({
       title: "Tema alterado",
-      description: `Modo ${!darkMode ? "escuro" : "claro"} ativado`,
+      description: `Modo ${newDarkMode ? "escuro" : "claro"} ativado`,
     });
   };
   
   // Handle para alternar dias de trabalho
   const handleToggleWorkDay = (day: keyof typeof workDays) => {
-    setWorkDays(prev => ({
-      ...prev,
-      [day]: !prev[day]
-    }));
+    const newWorkDays = {
+      ...workDays,
+      [day]: !workDays[day]
+    };
+    setWorkDays(newWorkDays);
+    saveSettings();
   };
   
   // Handle para salvar horários de trabalho
   const handleSaveWorkHours = () => {
+    saveSettings();
     toast({
       title: "Horários salvos",
-      description: `Seus horários de trabalho foram atualizados`,
-    });
-    
-    // Aqui seria o lugar para salvar no backend
-    console.log({
-      workDays,
-      startTime,
-      endTime
+      description: "Seus horários de trabalho foram atualizados",
     });
   };
   
@@ -97,15 +153,30 @@ const ConfigPage: React.FC = () => {
   const handleApplyColorTheme = (index: number) => {
     setSelectedColorTheme(index);
     
-    // Aqui poderíamos alterar as variáveis CSS
-    const theme = colorOptions[index];
-    document.documentElement.style.setProperty('--primary-color', theme.primary);
-    document.documentElement.style.setProperty('--secondary-color', theme.secondary);
-    document.documentElement.style.setProperty('--accent-color', theme.accent);
+    if (user?.id) {
+      const newSettings: UserSettings = {
+        userId: user.id,
+        theme: {
+          colorTheme: index,
+          isDarkMode: darkMode
+        },
+        notifications: {
+          enabled: notificationsEnabled,
+          appointments: appointmentReminders,
+          reviews: reviewNotifications
+        },
+        workHours: {
+          startTime,
+          endTime,
+          workDays
+        }
+      };
+      updateSettings(newSettings);
+    }
     
     toast({
       title: "Tema de cores alterado",
-      description: `Tema "${theme.name}" aplicado com sucesso`,
+      description: `Tema "${colorOptions[index].name}" aplicado com sucesso`,
     });
   };
   
@@ -114,7 +185,7 @@ const ConfigPage: React.FC = () => {
     logout();
     navigate('/');
   };
-  
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header title="Configurações" showBackButton={true} />
@@ -140,29 +211,31 @@ const ConfigPage: React.FC = () => {
                   <Switch checked={darkMode} onCheckedChange={handleToggleDarkMode} />
                 </div>
                 
-                <div>
-                  <div className="flex items-center space-x-3 mb-3">
-                    <div className="bg-muted p-2 rounded-full">
-                      <PaintBucket size={18} />
+                {canCustomizeAppearance && (
+                  <div>
+                    <div className="flex items-center space-x-3 mb-3">
+                      <div className="bg-muted p-2 rounded-full">
+                        <PaintBucket size={18} />
+                      </div>
+                      <div>
+                        <p className="font-medium">Cores do app</p>
+                        <p className="text-sm text-muted-foreground">Personalizar as cores do app</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium">Cores do app</p>
-                      <p className="text-sm text-muted-foreground">Personalizar as cores do app</p>
+                    
+                    <div className="grid grid-cols-5 gap-2 mt-2">
+                      {colorOptions.map((color, index) => (
+                        <button
+                          key={index}
+                          className={`w-full aspect-square rounded-full border-2 ${selectedColorTheme === index ? 'border-ring scale-110' : 'border-transparent'} transition-all`}
+                          style={{ backgroundColor: color.primary }}
+                          onClick={() => handleApplyColorTheme(index)}
+                          aria-label={`Tema de cor ${color.name}`}
+                        />
+                      ))}
                     </div>
                   </div>
-                  
-                  <div className="grid grid-cols-5 gap-2 mt-2">
-                    {colorOptions.map((color, index) => (
-                      <button
-                        key={index}
-                        className={`w-full aspect-square rounded-full border-2 ${selectedColorTheme === index ? 'border-ring scale-110' : 'border-transparent'} transition-all`}
-                        style={{ backgroundColor: color.primary }}
-                        onClick={() => handleApplyColorTheme(index)}
-                        aria-label={`Tema de cor ${color.name}`}
-                      />
-                    ))}
-                  </div>
-                </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -185,7 +258,10 @@ const ConfigPage: React.FC = () => {
                   </div>
                   <Switch 
                     checked={notificationsEnabled}
-                    onCheckedChange={setNotificationsEnabled}
+                    onCheckedChange={(checked) => {
+                      setNotificationsEnabled(checked);
+                      saveSettings();
+                    }}
                   />
                 </div>
                 
@@ -198,7 +274,10 @@ const ConfigPage: React.FC = () => {
                       </div>
                       <Switch 
                         checked={appointmentReminders} 
-                        onCheckedChange={setAppointmentReminders}
+                        onCheckedChange={(checked) => {
+                          setAppointmentReminders(checked);
+                          saveSettings();
+                        }}
                       />
                     </div>
                     
@@ -209,7 +288,10 @@ const ConfigPage: React.FC = () => {
                       </div>
                       <Switch 
                         checked={reviewNotifications}
-                        onCheckedChange={setReviewNotifications}
+                        onCheckedChange={(checked) => {
+                          setReviewNotifications(checked);
+                          saveSettings();
+                        }}
                       />
                     </div>
                   </div>
@@ -218,111 +300,119 @@ const ConfigPage: React.FC = () => {
             </CardContent>
           </Card>
           
-          {/* Preferências de Agenda */}
-          <Card>
-            <CardContent className="p-4">
-              <h2 className="text-lg font-semibold mb-4">Horários de trabalho</h2>
-              
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3 mb-2">
-                  <div className="bg-muted p-2 rounded-full">
-                    <Clock size={18} />
-                  </div>
-                  <div>
-                    <p className="font-medium">Definir horários</p>
-                    <p className="text-sm text-muted-foreground">Configure seus dias e horários disponíveis</p>
-                  </div>
-                </div>
+          {/* Preferências de Agenda - Apenas para profissionais */}
+          {isProfessional && (
+            <Card>
+              <CardContent className="p-4">
+                <h2 className="text-lg font-semibold mb-4">Horários de trabalho</h2>
                 
                 <div className="space-y-4">
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    <Toggle 
-                      pressed={workDays.monday}
-                      onPressedChange={() => handleToggleWorkDay('monday')}
-                      aria-label="Segunda-feira"
-                      className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-                    >
-                      Seg
-                    </Toggle>
-                    <Toggle 
-                      pressed={workDays.tuesday}
-                      onPressedChange={() => handleToggleWorkDay('tuesday')}
-                      aria-label="Terça-feira"
-                      className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-                    >
-                      Ter
-                    </Toggle>
-                    <Toggle 
-                      pressed={workDays.wednesday}
-                      onPressedChange={() => handleToggleWorkDay('wednesday')}
-                      aria-label="Quarta-feira"
-                      className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-                    >
-                      Qua
-                    </Toggle>
-                    <Toggle 
-                      pressed={workDays.thursday}
-                      onPressedChange={() => handleToggleWorkDay('thursday')}
-                      aria-label="Quinta-feira"
-                      className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-                    >
-                      Qui
-                    </Toggle>
-                    <Toggle 
-                      pressed={workDays.friday}
-                      onPressedChange={() => handleToggleWorkDay('friday')}
-                      aria-label="Sexta-feira"
-                      className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-                    >
-                      Sex
-                    </Toggle>
-                    <Toggle 
-                      pressed={workDays.saturday}
-                      onPressedChange={() => handleToggleWorkDay('saturday')}
-                      aria-label="Sábado"
-                      className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-                    >
-                      Sáb
-                    </Toggle>
-                    <Toggle 
-                      pressed={workDays.sunday}
-                      onPressedChange={() => handleToggleWorkDay('sunday')}
-                      aria-label="Domingo"
-                      className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-                    >
-                      Dom
-                    </Toggle>
+                  <div className="flex items-center space-x-3 mb-2">
+                    <div className="bg-muted p-2 rounded-full">
+                      <Clock size={18} />
+                    </div>
+                    <div>
+                      <p className="font-medium">Definir horários</p>
+                      <p className="text-sm text-muted-foreground">Configure seus dias e horários disponíveis</p>
+                    </div>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="start-time">Horário inicial</Label>
-                      <Input
-                        id="start-time"
-                        type="time"
-                        value={startTime}
-                        onChange={(e) => setStartTime(e.target.value)}
-                      />
+                  <div className="space-y-4">
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      <Toggle 
+                        pressed={workDays.monday}
+                        onPressedChange={() => handleToggleWorkDay('monday')}
+                        aria-label="Segunda-feira"
+                        className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                      >
+                        Seg
+                      </Toggle>
+                      <Toggle 
+                        pressed={workDays.tuesday}
+                        onPressedChange={() => handleToggleWorkDay('tuesday')}
+                        aria-label="Terça-feira"
+                        className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                      >
+                        Ter
+                      </Toggle>
+                      <Toggle 
+                        pressed={workDays.wednesday}
+                        onPressedChange={() => handleToggleWorkDay('wednesday')}
+                        aria-label="Quarta-feira"
+                        className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                      >
+                        Qua
+                      </Toggle>
+                      <Toggle 
+                        pressed={workDays.thursday}
+                        onPressedChange={() => handleToggleWorkDay('thursday')}
+                        aria-label="Quinta-feira"
+                        className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                      >
+                        Qui
+                      </Toggle>
+                      <Toggle 
+                        pressed={workDays.friday}
+                        onPressedChange={() => handleToggleWorkDay('friday')}
+                        aria-label="Sexta-feira"
+                        className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                      >
+                        Sex
+                      </Toggle>
+                      <Toggle 
+                        pressed={workDays.saturday}
+                        onPressedChange={() => handleToggleWorkDay('saturday')}
+                        aria-label="Sábado"
+                        className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                      >
+                        Sáb
+                      </Toggle>
+                      <Toggle 
+                        pressed={workDays.sunday}
+                        onPressedChange={() => handleToggleWorkDay('sunday')}
+                        aria-label="Domingo"
+                        className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                      >
+                        Dom
+                      </Toggle>
                     </div>
                     
-                    <div className="space-y-2">
-                      <Label htmlFor="end-time">Horário final</Label>
-                      <Input
-                        id="end-time"
-                        type="time"
-                        value={endTime}
-                        onChange={(e) => setEndTime(e.target.value)}
-                      />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="start-time">Horário inicial</Label>
+                        <Input
+                          id="start-time"
+                          type="time"
+                          value={startTime}
+                          onChange={(e) => {
+                            setStartTime(e.target.value);
+                            saveSettings();
+                          }}
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="end-time">Horário final</Label>
+                        <Input
+                          id="end-time"
+                          type="time"
+                          value={endTime}
+                          onChange={(e) => {
+                            setEndTime(e.target.value);
+                            saveSettings();
+                          }}
+                        />
+                      </div>
                     </div>
+                    
+                    <Button onClick={handleSaveWorkHours} className="w-full">
+                      <Save className="mr-2 h-4 w-4" /> Salvar horários
+                    </Button>
                   </div>
-                  
-                  <Button onClick={handleSaveWorkHours} className="w-full">
-                    <Save className="mr-2 h-4 w-4" /> Salvar horários
-                  </Button>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
           
           {/* Conta */}
           {isAuthenticated && (
@@ -333,8 +423,11 @@ const ConfigPage: React.FC = () => {
                 {user && (
                   <div className="mb-4">
                     <p className="text-sm text-muted-foreground mb-1">Logado como:</p>
-                    <p className="font-medium">{user.name}</p>
-                    <p className="text-sm">{user.email}</p>
+                    <p className="font-medium">{user.email}</p>
+                    <p className="text-sm">
+                      {user.role === 'professional' ? 'Profissional' : 
+                       user.role === 'admin' ? 'Administrador' : 'Cliente'}
+                    </p>
                   </div>
                 )}
                 

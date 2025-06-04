@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Appointment } from '../models/appointment.model';
 import { formatDate, formatTime } from '../utils/dateUtils';
@@ -10,11 +9,18 @@ interface AppointmentCardProps {
 }
 
 const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment, onClick }) => {
-  const statusClasses = {
-    pending: 'appointment-card pending',
-    confirmed: 'appointment-card confirmed',
-    cancelled: 'appointment-card cancelled',
-    completed: 'appointment-card'
+  const getStatusClasses = (status: string) => {
+    const baseClasses = 'card-shadow p-4 mb-4 cursor-pointer transition-all';
+    switch (status) {
+      case 'pending':
+        return `${baseClasses} bg-warning/10`;
+      case 'confirmed':
+        return `${baseClasses} bg-success/10`;
+      case 'cancelled':
+        return `${baseClasses} bg-error/10`;
+      default:
+        return baseClasses;
+    }
   };
   
   const statusLabels = {
@@ -29,22 +35,22 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment, onClick 
     : '';
   
   return (
-    <div className={statusClasses[appointment.status]} onClick={onClick}>
+    <div className={getStatusClasses(appointment.status)} onClick={onClick}>
       <div className="flex justify-between">
         <div>
-          <span className="block text-sm font-semibold">
+          <span className="block text-sm font-semibold text-primary">
             {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
           </span>
-          <span className="block text-barber-dark font-medium mt-1">
+          <span className="block font-medium mt-1">
             {appointment.customer?.name || 'Cliente'}
           </span>
         </div>
         
         <div className="text-right">
-          <span className="text-sm font-medium text-barber-dark">
+          <span className="text-sm font-medium">
             {formatDate(appointment.date)}
           </span>
-          <span className="block text-sm mt-1 font-semibold text-barber-primary">
+          <span className="block text-sm mt-1 font-semibold text-primary">
             {formatCurrency(appointment.totalPrice)}
           </span>
         </div>
@@ -58,10 +64,10 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment, onClick 
         </span>
         
         <span className={`text-xs px-2 py-1 rounded-full ${
-          appointment.status === 'confirmed' ? 'bg-barber-success/20 text-barber-success' : 
-          appointment.status === 'cancelled' ? 'bg-barber-error/20 text-barber-error' : 
+          appointment.status === 'confirmed' ? 'bg-success/20 text-success' : 
+          appointment.status === 'cancelled' ? 'bg-error/20 text-error' : 
           appointment.status === 'completed' ? 'bg-gray-200 text-gray-700' :
-          'bg-barber-warning/20 text-barber-warning'
+          'bg-warning/20 text-warning'
         }`}>
           {statusLabels[appointment.status]}
         </span>

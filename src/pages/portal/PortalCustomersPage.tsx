@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -57,7 +56,11 @@ const customerFormSchema = z.object({
   email: z.string().email('Email inválido').optional().or(z.literal('')),
   birthdate: z.string().optional(),
   notes: z.string().optional(),
-});
+}).transform((data) => ({
+  ...data,
+  createdAt: new Date().toISOString(),
+  totalAppointments: 0
+}));
 
 type CustomerFormValues = z.infer<typeof customerFormSchema>;
 
@@ -166,7 +169,15 @@ const PortalCustomersPage: React.FC = () => {
         });
       } else {
         // Criar novo cliente
-        await customerService.createCustomer(data);
+        await customerService.addCustomer({
+          name: data.name,
+          phone: data.phone,
+          email: data.email,
+          birthdate: data.birthdate,
+          notes: data.notes,
+          createdAt: new Date().toISOString(),
+          totalAppointments: 0
+        });
         toast({
           title: "Cliente criado",
           description: "Novo cliente foi criado com sucesso",
