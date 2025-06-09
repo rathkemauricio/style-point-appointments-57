@@ -17,10 +17,10 @@ import { UserSettings } from '../models/user-settings.model';
 
 const colorOptions = [
   { name: 'Caramelo', primary: '#C4804E', secondary: '#FBE6D4', accent: '#8B4513' },
-  { name: 'Marrom Escuro', primary: '#8B4513', secondary: '#2C1810', accent: '#C4804E' },
-  { name: 'Marrom Médio', primary: '#A0522D', secondary: '#DEB887', accent: '#8B4513' },
-  { name: 'Marrom Claro', primary: '#D2691E', secondary: '#FFE4C4', accent: '#8B4513' },
-  { name: 'Caramelo Dourado', primary: '#CD853F', secondary: '#F5DEB3', accent: '#8B4513' },
+  { name: 'Azul Profissional', primary: '#3B82F6', secondary: '#1E293B', accent: '#06B6D4' },
+  { name: 'Verde Esmeralda', primary: '#10B981', secondary: '#064E3B', accent: '#34D399' },
+  { name: 'Roxo Elegante', primary: '#8B5CF6', secondary: '#4C1D95', accent: '#A78BFA' },
+  { name: 'Azul Marinho', primary: '#1E40AF', secondary: '#1E3A8A', accent: '#3B82F6' },
 ];
 
 const ConfigPage: React.FC = () => {
