@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { User, Settings, LogOut, Scissors, Calendar, DollarSign } from 'lucide-react';
+import { User, Settings, LogOut, Scissors, Calendar, DollarSign, Users, Star } from 'lucide-react';
 import { useAuth } from '../hooks/use-auth';
+import { usePermissions } from '../hooks/use-permissions';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,12 +14,12 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
-import { Professional } from '../models/professional.model';
 import { useQuery } from '@tanstack/react-query';
 import professionalService from '../services/professional.service';
 
 const UserProfileMenu: React.FC = () => {
   const { user, logout } = useAuth();
+  const { hasPermission, canManageServices, canViewFinancials, canManageSettings } = usePermissions();
   const navigate = useNavigate();
   
   // Obter detalhes do profissional
@@ -79,25 +80,47 @@ const UserProfileMenu: React.FC = () => {
           <span>Portal</span>
         </DropdownMenuItem>
         
-        <DropdownMenuItem onClick={() => navigate('/portal/services')}>
-          <Scissors className="mr-2 h-4 w-4" />
-          <span>Meus Serviços</span>
-        </DropdownMenuItem>
+        {canManageServices() && (
+          <DropdownMenuItem onClick={() => navigate('/portal/services')}>
+            <Scissors className="mr-2 h-4 w-4" />
+            <span>Meus Serviços</span>
+          </DropdownMenuItem>
+        )}
         
-        <DropdownMenuItem onClick={() => navigate('/portal/agenda')}>
-          <Calendar className="mr-2 h-4 w-4" />
-          <span>Agenda</span>
-        </DropdownMenuItem>
+        {hasPermission('view_agenda') && (
+          <DropdownMenuItem onClick={() => navigate('/portal/agenda')}>
+            <Calendar className="mr-2 h-4 w-4" />
+            <span>Agenda</span>
+          </DropdownMenuItem>
+        )}
         
-        <DropdownMenuItem onClick={() => navigate('/portal/revenue')}>
-          <DollarSign className="mr-2 h-4 w-4" />
-          <span>Faturamento</span>
-        </DropdownMenuItem>
+        {canViewFinancials() && (
+          <DropdownMenuItem onClick={() => navigate('/portal/revenue')}>
+            <DollarSign className="mr-2 h-4 w-4" />
+            <span>Faturamento</span>
+          </DropdownMenuItem>
+        )}
         
-        <DropdownMenuItem onClick={() => navigate('/portal/settings')}>
-          <Settings className="mr-2 h-4 w-4" />
-          <span>Configurações</span>
-        </DropdownMenuItem>
+        {hasPermission('view_customers') && (
+          <DropdownMenuItem onClick={() => navigate('/portal/customers')}>
+            <Users className="mr-2 h-4 w-4" />
+            <span>Clientes</span>
+          </DropdownMenuItem>
+        )}
+        
+        {hasPermission('view_reviews') && (
+          <DropdownMenuItem onClick={() => navigate('/portal/reviews')}>
+            <Star className="mr-2 h-4 w-4" />
+            <span>Avaliações</span>
+          </DropdownMenuItem>
+        )}
+        
+        {canManageSettings() && (
+          <DropdownMenuItem onClick={() => navigate('/portal/settings')}>
+            <Settings className="mr-2 h-4 w-4" />
+            <span>Configurações</span>
+          </DropdownMenuItem>
+        )}
         
         <DropdownMenuSeparator />
         
