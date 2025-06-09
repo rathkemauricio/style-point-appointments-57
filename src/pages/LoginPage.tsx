@@ -62,6 +62,11 @@ const LoginPage: React.FC = () => {
       });
     }
   };
+
+  const fillCredentials = (email: string, password: string) => {
+    form.setValue('email', email);
+    form.setValue('password', password);
+  };
   
   return (
     <div className="flex flex-col min-h-screen">
@@ -119,10 +124,69 @@ const LoginPage: React.FC = () => {
             </form>
           </Form>
           
-          <div className="mt-4 text-sm text-center text-muted-foreground">
-            <p>Use as seguintes credenciais para teste:</p>
-            <p className="font-mono text-xs mt-1 font-bold">joao@barbearia.com / 123456</p>
-            <p className="text-xs mt-2">Esta é uma versão de demonstração para profissionais acessarem seu portal.</p>
+          <div className="mt-6 space-y-4">
+            <div className="text-sm text-center text-muted-foreground">
+              <p className="font-semibold mb-3">Usuários de teste para controle de acesso:</p>
+            </div>
+            
+            {/* Admin */}
+            <div className="border rounded-lg p-3">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="font-semibold text-sm">👑 Administrador</p>
+                  <p className="text-xs text-gray-600">Acesso total ao sistema</p>
+                  <p className="font-mono text-xs text-blue-600">admin@barbearia.com</p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => fillCredentials('admin@barbearia.com', '123456')}
+                >
+                  Usar
+                </Button>
+              </div>
+            </div>
+            
+            {/* Barbeiro */}
+            <div className="border rounded-lg p-3">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="font-semibold text-sm">✂️ Barbeiro</p>
+                  <p className="text-xs text-gray-600">Agenda, clientes e serviços</p>
+                  <p className="font-mono text-xs text-green-600">barbeiro@barbearia.com</p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => fillCredentials('barbeiro@barbearia.com', '123456')}
+                >
+                  Usar
+                </Button>
+              </div>
+            </div>
+            
+            {/* Cliente */}
+            <div className="border rounded-lg p-3">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="font-semibold text-sm">👤 Cliente</p>
+                  <p className="text-xs text-gray-600">Serviços e disponibilidade</p>
+                  <p className="font-mono text-xs text-purple-600">cliente@email.com</p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => fillCredentials('cliente@email.com', '123456')}
+                >
+                  Usar
+                </Button>
+              </div>
+            </div>
+            
+            <div className="text-xs text-center text-muted-foreground mt-4">
+              <p>Senha para todos: <span className="font-mono font-bold">123456</span></p>
+              <p className="mt-1">Esta é uma versão de demonstração do controle de acesso.</p>
+            </div>
           </div>
         </div>
       </div>

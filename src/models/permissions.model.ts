@@ -1,4 +1,3 @@
-
 export interface Permission {
   id: string;
   name: string;
@@ -160,29 +159,25 @@ export const PERMISSIONS: Record<string, Permission> = {
   }
 };
 
-// Default permissions by role
+// Default permissions by role - Updated for testing
 export const DEFAULT_ROLE_PERMISSIONS: Record<string, string[]> = {
   admin: Object.keys(PERMISSIONS), // Admin has all permissions
   professional: [
+    // Agenda permissions - barbeiro pode ver e gerenciar agendamentos
     'view_agenda',
     'create_appointment',
     'edit_appointment',
     'delete_appointment',
-    'view_services',
-    'create_service',
-    'edit_service',
-    'delete_service',
-    'manage_service_prices',
-    'view_revenue',
-    'export_reports',
+    
+    // Customer permissions - barbeiro pode ver lista de clientes
     'view_customers',
-    'edit_customer',
-    'view_reviews',
-    'respond_reviews',
-    'manage_settings',
-    'manage_work_hours'
+    
+    // Basic service viewing
+    'view_services'
   ],
   customer: [
-    'view_services'
+    // Cliente pode ver serviços e agendamentos
+    'view_services',
+    'view_agenda' // Para ver disponibilidade de horários
   ]
 };

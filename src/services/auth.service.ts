@@ -18,28 +18,57 @@ class AuthService {
    */
   async login(credentials: LoginCredentials): Promise<LoginResponse | null> {
     try {
-      // Em um app real, chamaríamos a API
-      // const response = await this.api.post('/auth/login', credentials);
+      // Usuários de teste para controle de acesso
+      const testUsers = [
+        {
+          email: 'admin@barbearia.com',
+          password: '123456',
+          user: {
+            id: 'admin-1',
+            email: 'admin@barbearia.com',
+            role: 'admin' as const,
+          }
+        },
+        {
+          email: 'barbeiro@barbearia.com',
+          password: '123456',
+          user: {
+            id: 'professional-1',
+            email: 'barbeiro@barbearia.com',
+            role: 'professional' as const,
+            professionalId: 'prof-1',
+          }
+        },
+        {
+          email: 'cliente@email.com',
+          password: '123456',
+          user: {
+            id: 'customer-1',
+            email: 'cliente@email.com',
+            role: 'customer' as const,
+          }
+        },
+        {
+          // Manter o usuário original para compatibilidade
+          email: 'joao@barbearia.com',
+          password: '123456',
+          user: {
+            id: 'user-prof-1',
+            email: 'joao@barbearia.com',
+            role: 'professional' as const,
+            professionalId: mockProfessionals[0].id,
+          }
+        }
+      ];
       
-      // Para desenvolvimento, simulamos uma resposta bem-sucedida
-      // Mock de login do profissional baseado no email (para fins de demonstração)
-      const professional = mockProfessionals.find(p => 
-        `${p.name.toLowerCase().replace(/\s/g, '')}@barbearia.com` === credentials.email);
+      // Verificar se as credenciais correspondem a algum usuário de teste
+      const testUser = testUsers.find(user => 
+        user.email === credentials.email && user.password === credentials.password
+      );
       
-      // Para teste, permitir login com as credenciais de exemplo
-      if (credentials.email === 'joao@barbearia.com' && credentials.password === '123456') {
-        // Usar o primeiro profissional como exemplo para o login de teste
-        const testProfessional = mockProfessionals[0];
-        
-        const authUser: AuthUser = {
-          id: `user-${testProfessional.id}`,
-          email: credentials.email,
-          role: 'professional',
-          professionalId: testProfessional.id,
-        };
-        
+      if (testUser) {
         const response: LoginResponse = {
-          user: authUser,
+          user: testUser.user,
           token: `mock-token-${Date.now()}`
         };
         
@@ -49,6 +78,10 @@ class AuthService {
         
         return response;
       }
+      
+      // Fallback para lógica anterior (busca por profissional)
+      const professional = mockProfessionals.find(p => 
+        `${p.name.toLowerCase().replace(/\s/g, '')}@barbearia.com` === credentials.email);
       
       if (!professional) {
         throw new Error('Credenciais inválidas');
