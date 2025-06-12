@@ -3,7 +3,7 @@ import { mockCustomers } from '../mocks/mockData';
 
 class CustomerService {
   private customers: Customer[] = [...mockCustomers];
-  
+
   async getCustomers(): Promise<Customer[]> {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -11,7 +11,7 @@ class CustomerService {
       }, 500);
     });
   }
-  
+
   async getCustomerById(id: string): Promise<Customer | undefined> {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -20,7 +20,7 @@ class CustomerService {
       }, 300);
     });
   }
-  
+
   async updateCustomer(id: string, data: Partial<Customer>): Promise<Customer> {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
@@ -29,17 +29,17 @@ class CustomerService {
           reject(new Error('Customer not found'));
           return;
         }
-        
+
         this.customers[index] = {
           ...this.customers[index],
           ...data
         };
-        
+
         resolve(this.customers[index]);
       }, 300);
     });
   }
-  
+
   async addCustomer(customer: Omit<Customer, 'id'>): Promise<Customer> {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -47,7 +47,7 @@ class CustomerService {
           id: `customer-${Date.now()}`,
           ...customer
         };
-        
+
         this.customers.push(newCustomer);
         resolve(newCustomer);
       }, 300);
@@ -73,7 +73,7 @@ class CustomerService {
           createdAt: new Date().toISOString(),
           totalAppointments: 0
         };
-        
+
         this.customers.push(newCustomer);
         resolve(newCustomer);
       }, 300);

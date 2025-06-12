@@ -20,7 +20,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-  
+
   // Carregar usuário do localStorage ao iniciar
   useEffect(() => {
     const loadUser = () => {
@@ -28,10 +28,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(currentUser);
       setIsLoading(false);
     };
-    
+
     loadUser();
   }, []);
-  
+
   // Login
   const login = async (credentials: LoginCredentials): Promise<boolean> => {
     setIsLoading(true);
@@ -53,7 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(false);
     }
   };
-  
+
   // Logout
   const logout = () => {
     authService.logout();
@@ -61,7 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     toast.info('Sessão encerrada');
     navigate('/login');
   };
-  
+
   const value = {
     user,
     isLoading,
@@ -70,7 +70,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     login,
     logout
   };
-  
+
   return (
     <AuthContext.Provider value={value}>
       {children}

@@ -8,11 +8,11 @@ class AuthService {
   private api: ApiService;
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'auth_user';
-  
+
   constructor() {
     this.api = new ApiService(appConfig.api.baseUrl, appConfig.api.timeout);
   }
-  
+
   /**
    * Login com email e senha
    */
@@ -60,56 +60,56 @@ class AuthService {
           }
         }
       ];
-      
+
       // Verificar se as credenciais correspondem a algum usuário de teste
-      const testUser = testUsers.find(user => 
+      const testUser = testUsers.find(user =>
         user.email === credentials.email && user.password === credentials.password
       );
-      
+
       if (testUser) {
         const response: LoginResponse = {
           user: testUser.user,
           token: `mock-token-${Date.now()}`
         };
-        
+
         // Salva na localStorage
         localStorage.setItem(this.TOKEN_KEY, response.token);
         localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
-        
+
         return response;
       }
-      
+
       // Fallback para lógica anterior (busca por profissional)
-      const professional = mockProfessionals.find(p => 
+      const professional = mockProfessionals.find(p =>
         `${p.name.toLowerCase().replace(/\s/g, '')}@barbearia.com` === credentials.email);
-      
+
       if (!professional) {
         throw new Error('Credenciais inválidas');
       }
-      
+
       const authUser: AuthUser = {
         id: `user-${professional.id}`,
         email: credentials.email,
         role: 'professional',
         professionalId: professional.id,
       };
-      
+
       const response: LoginResponse = {
         user: authUser,
         token: `mock-token-${Date.now()}`
       };
-      
+
       // Salva na localStorage
       localStorage.setItem(this.TOKEN_KEY, response.token);
       localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
-      
+
       return response;
     } catch (error) {
       console.error('Falha no login:', error);
       return null;
     }
   }
-  
+
   /**
    * Logout do usuário atual
    */
@@ -117,28 +117,28 @@ class AuthService {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
   }
-  
+
   /**
    * Verifica se o usuário está autenticado
    */
   isAuthenticated(): boolean {
     return !!this.getToken();
   }
-  
+
   /**
    * Obtém o token de autenticação
    */
   getToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
   }
-  
+
   /**
    * Obtém os dados do usuário logado
    */
   getCurrentUser(): AuthUser | null {
     const userJson = localStorage.getItem(this.USER_KEY);
     if (!userJson) return null;
-    
+
     try {
       return JSON.parse(userJson) as AuthUser;
     } catch (error) {
@@ -146,7 +146,7 @@ class AuthService {
       return null;
     }
   }
-  
+
   /**
    * Verifica se o usuário tem um papel específico
    */
@@ -154,7 +154,7 @@ class AuthService {
     const user = this.getCurrentUser();
     return user?.role === role;
   }
-  
+
   /**
    * Verifica se o usuário é um profissional
    */

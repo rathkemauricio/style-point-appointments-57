@@ -55,7 +55,7 @@ const App = () => (
               <Route path="/servicos" element={<ServicesPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/config" element={<ConfigPage />} />
-              
+
               {/* Rotas protegidas - Portal do Profissional */}
               <Route path="/portal" element={
                 <ProtectedRoute requiredRole="professional">
@@ -87,17 +87,17 @@ const App = () => (
                   <PortalReviewsPage />
                 </ProtectedRoute>
               } />
-              
+
               {/* Rotas de administração */}
               <Route path="/admin/white-label" element={
                 <ProtectedRoute requiredRole="admin">
                   <WhiteLabelConfigPage />
                 </ProtectedRoute>
               } />
-              
+
               {/* Rotas de estatísticas */}
               <Route path="/estatisticas" element={<StatsPage />} />
-              
+
               {/* Rota 404 */}
               <Route path="*" element={<NotFound />} />
             </Routes>
