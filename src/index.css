@@ -1,13 +1,16 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Removido: tokens locais de cor duplicados, agora as variáveis vêm do serviço dinamicamente */
+
 @layer base {
   :root {
-    /* Caramelized palette for light mode */
-    --primary-color: #C4804E; /* caramel */
+    /* Tokens para fallback, sobrescritos pelo serviço JS */
+    --primary-color: #C4804E;
     --secondary-color: #FBE6D4;
     --accent-color: #8B4513;
     --success-color: #4CAF50;
@@ -35,7 +38,6 @@
   }
 
   .dark {
-    /* Modern blue for dark mode */
     --primary-color: #3B82F6;
     --secondary-color: #27354A;
     --accent-color: #06B6D4;

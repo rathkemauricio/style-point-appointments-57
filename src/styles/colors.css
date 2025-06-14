@@ -1,7 +1,7 @@
-/* Color variables now aliased to Tailwind theme colors for consistency */
+
+/* Regras de cor centralizadas, dependem das variáveis de tema definidas na raiz pelo serviço */
 
 :root {
-  /* Main theme colors kept for legacy fallback and compatibility, but now only mapped from index.css */
   --primary-color: var(--primary);
   --secondary-color: var(--secondary);
   --accent-color: var(--accent);
@@ -46,29 +46,26 @@
   border-color: var(--accent-color);
 }
 
-/* Status colors */
+/* Status colors (podem ser usados com bg-success, bg-error, etc) */
 .status-pending {
   background-color: var(--warning-color);
   color: white;
 }
-
 .status-confirmed {
   background-color: var(--success-color);
   color: white;
 }
-
 .status-cancelled {
   background-color: var(--error-color);
   color: white;
 }
 
-/* Card styles */
+/* Sombras e cartões */
 .card-shadow {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 0.5rem;
   background-color: white;
 }
-
 .card-shadow:hover {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -89,7 +86,6 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
 }
-
 .floating-action-button:hover {
   transform: scale(1.05);
   background-color: var(--accent-color);
