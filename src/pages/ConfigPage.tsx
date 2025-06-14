@@ -27,10 +27,10 @@ const ConfigPage: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { logout, isAuthenticated, user } = useAuth();
-  const { settings, updateSettings } = useSettings();
+  const { settings, updateSettings, setDarkMode } = useSettings();
   
   // Estados para as configurações
-  const [darkMode, setDarkMode] = useState<boolean>(settings?.theme.isDarkMode ?? false);
+  const [darkMode, setDarkModeLocal] = useState<boolean>(settings?.theme.isDarkMode ?? false);
   const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(settings?.notifications.enabled ?? true);
   const [appointmentReminders, setAppointmentReminders] = useState<boolean>(settings?.notifications.appointments ?? true);
   const [reviewNotifications, setReviewNotifications] = useState<boolean>(settings?.notifications.reviews ?? true);
@@ -59,7 +59,7 @@ const ConfigPage: React.FC = () => {
   // Atualizar estados quando as configurações mudarem
   useEffect(() => {
     if (settings) {
-      setDarkMode(settings.theme.isDarkMode);
+      setDarkModeLocal(settings.theme.isDarkMode);
       if (canCustomizeAppearance) {
         setSelectedColorTheme(settings.theme.colorTheme);
       }
@@ -103,27 +103,9 @@ const ConfigPage: React.FC = () => {
   // Handle para trocar o modo escuro/claro
   const handleToggleDarkMode = () => {
     const newDarkMode = !darkMode;
-    setDarkMode(newDarkMode);
-    if (user?.id) {
-      const newSettings: UserSettings = {
-        userId: user.id,
-        theme: {
-          colorTheme: selectedColorTheme,
-          isDarkMode: newDarkMode
-        },
-        notifications: {
-          enabled: notificationsEnabled,
-          appointments: appointmentReminders,
-          reviews: reviewNotifications
-        },
-        workHours: {
-          startTime,
-          endTime,
-          workDays
-        }
-      };
-      updateSettings(newSettings);
-    }
+    setDarkModeLocal(newDarkMode);
+    setDarkMode(newDarkMode); // Ativa dark mode global e salva
+
     toast({
       title: "Tema alterado",
       description: `Modo ${newDarkMode ? "escuro" : "claro"} ativado`,
