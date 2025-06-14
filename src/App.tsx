@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -49,7 +50,7 @@ const App = () => (
         <AuthProvider>
           <SettingsProvider>
             <Routes>
-              {/* Rotas públicas */}
+              {/* Rotas públicas - acessíveis a todos */}
               <Route path="/" element={<Index />} />
               <Route path="/agenda" element={<AgendaPage />} />
               <Route path="/agenda/:id" element={<AppointmentDetailsPage />} />
@@ -57,50 +58,78 @@ const App = () => (
               <Route path="/servicos" element={<ServicesPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/config" element={<ConfigPage />} />
-              
-              {/* Rotas protegidas - Portal do Profissional */}
-              <Route path="/portal" element={
-                <ProtectedRoute requiredRole="professional">
-                  <PortalPage />
-                </ProtectedRoute>
-              } />
-              <Route path="/portal/agenda" element={
-                <ProtectedRoute requiredRole="professional">
-                  <PortalAgendaPage />
-                </ProtectedRoute>
-              } />
-              <Route path="/portal/services" element={
-                <ProtectedRoute requiredRole="professional">
-                  <PortalServicesPage />
-                </ProtectedRoute>
-              } />
-              <Route path="/portal/revenue" element={
-                <ProtectedRoute requiredRole="professional">
-                  <PortalRevenuePage />
-                </ProtectedRoute>
-              } />
-              <Route path="/portal/customers" element={
-                <ProtectedRoute requiredRole="professional">
-                  <PortalCustomersPage />
-                </ProtectedRoute>
-              } />
-              <Route path="/portal/reviews" element={
-                <ProtectedRoute requiredRole="professional">
-                  <PortalReviewsPage />
-                </ProtectedRoute>
-              } />
-              
-              {/* Rotas de administração */}
-              <Route path="/admin/white-label" element={
-                <ProtectedRoute requiredRole="admin">
-                  <WhiteLabelConfigPage />
-                </ProtectedRoute>
-              } />
-              
-              {/* Rotas de estatísticas */}
-              <Route path="/estatisticas" element={<StatsPage />} />
-              
-              {/* Rota 404 */}
+
+              {/* Portal do Profissional - apenas para usuários autenticados como professional */}
+              <Route
+                path="/portal"
+                element={
+                  <ProtectedRoute requiredRole="professional">
+                    <PortalPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/portal/agenda"
+                element={
+                  <ProtectedRoute requiredRole="professional">
+                    <PortalAgendaPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/portal/services"
+                element={
+                  <ProtectedRoute requiredRole="professional">
+                    <PortalServicesPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/portal/revenue"
+                element={
+                  <ProtectedRoute requiredRole="professional">
+                    <PortalRevenuePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/portal/customers"
+                element={
+                  <ProtectedRoute requiredRole="professional">
+                    <PortalCustomersPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/portal/reviews"
+                element={
+                  <ProtectedRoute requiredRole="professional">
+                    <PortalReviewsPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Rotas de administração - apenas para usuários com papel admin */}
+              <Route
+                path="/admin/white-label"
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <WhiteLabelConfigPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Rotas de estatísticas disponíveis apenas para admin e professional */}
+              <Route
+                path="/estatisticas"
+                element={
+                  <ProtectedRoute>
+                    <StatsPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Fallback: página não encontrada para qualquer outra rota */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </SettingsProvider>

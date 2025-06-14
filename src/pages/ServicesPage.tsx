@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -9,11 +10,15 @@ import FloatingActionButton from '../components/FloatingActionButton';
 import ServiceCard from '../components/ServiceCard';
 import serviceService from '../services/service.service';
 import appConfig from '../config/appConfig';
+import { useAuth } from '../hooks/use-auth';
 
 const ServicesPage: React.FC = () => {
   const navigate = useNavigate();
-  const isAdmin = true; // This would come from auth in a real app
-  
+  const { user, isAuthenticated } = useAuth();
+  // Admins podem gerenciar serviços (ver botões extra); barbeiros podem apenas visualizar, clientes/anônimos só veem listagem
+  const isAdmin = user?.role === "admin";
+  const isProfessional = user?.role === "professional";
+
   const { data: services = [] } = useQuery({
     queryKey: ['services'],
     queryFn: () => serviceService.getServices()
@@ -28,19 +33,19 @@ const ServicesPage: React.FC = () => {
     }
     servicesByCategory[category].push(service);
   });
-  
+
   const handleNewService = () => {
     navigate('/servicos/novo');
   };
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header 
-        title="Nossos Serviços" 
+      <Header
+        title="Nossos Serviços"
         showBackButton={true}
         rightAction={
           isAdmin ? (
-            <button 
+            <button
               className="p-2 rounded-full hover:bg-gray-100"
               onClick={() => navigate('/servicos/gerenciar')}
             >
@@ -49,23 +54,28 @@ const ServicesPage: React.FC = () => {
           ) : null
         }
       />
-      
+
       <div className="flex-1 page-container">
         {Object.keys(servicesByCategory).map(category => (
           <div key={category} className="mb-6">
             <h2 className="text-lg font-semibold text-primary mb-3">{category}</h2>
-            
+
             {servicesByCategory[category].map(service => (
-              <ServiceCard 
-                key={service.id} 
+              <ServiceCard
+                key={service.id}
                 service={service}
-                selectable={true}
-                onSelect={() => navigate(`/servicos/${service.id}`)}
+                selectable={!!(isProfessional || isAdmin)}
+                onSelect={() => {
+                  // Só profissionais e admins podem abrir tela de edição (exemplo didático de acesso)
+                  if (isProfessional || isAdmin) {
+                    navigate(`/servicos/${service.id}`);
+                  }
+                }}
               />
             ))}
           </div>
         ))}
-        
+
         {services.length === 0 && (
           <div className="flex flex-col items-center justify-center py-8">
             <p className="text-gray-500">Nenhum serviço cadastrado</p>
@@ -80,14 +90,14 @@ const ServicesPage: React.FC = () => {
           </div>
         )}
       </div>
-      
+
       {isAdmin && (
         <FloatingActionButton
           onClick={handleNewService}
           icon={<Plus size={24} />}
         />
       )}
-      
+
       <Footer />
     </div>
   );
