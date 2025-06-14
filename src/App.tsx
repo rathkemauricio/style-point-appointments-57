@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,6 +15,7 @@ import Index from "./pages/Index";
 import AgendaPage from "./pages/AgendaPage";
 import AppointmentBookingPage from "./pages/AppointmentBookingPage";
 import ServicesPage from "./pages/ServicesPage";
+import ServiceDetailsPage from "./pages/ServiceDetailsPage";
 import StatsPage from "./pages/StatsPage";
 import ConfigPage from "./pages/ConfigPage";
 import LoginPage from "./pages/LoginPage";
@@ -56,6 +58,7 @@ const App = () => (
               <Route path="/agenda/:id" element={<AppointmentDetailsPage />} />
               <Route path="/agendar" element={<AppointmentBookingPage />} />
               <Route path="/servicos" element={<ServicesPage />} />
+              <Route path="/servicos/:id" element={<ServiceDetailsPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/config" element={<ConfigPage />} />
 
@@ -73,6 +76,14 @@ const App = () => (
                 element={
                   <ProtectedRoute requiredRole="professional">
                     <PortalAgendaPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/portal/agenda/:id"
+                element={
+                  <ProtectedRoute requiredRole="professional">
+                    <AppointmentDetailsPage />
                   </ProtectedRoute>
                 }
               />

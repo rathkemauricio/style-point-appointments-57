@@ -27,6 +27,7 @@ const barberSchema = z.object({
   phone: z.string().min(8, "Telefone obrigatório"),
   email: z.string().email("E-mail inválido").optional().or(z.literal("")),
 });
+
 const customerSchema = z.object({
   name: z.string().min(2, "Nome obrigatório"),
   phone: z.string().min(8, "Telefone obrigatório"),
@@ -56,7 +57,10 @@ const CreateUserPage: React.FC = () => {
   const handleSubmitBarber = async (data: BarberForm) => {
     try {
       await professionalService.createProfessional({
-        ...data,
+        name: data.name,
+        title: data.title,
+        phone: data.phone,
+        email: data.email || "",
         serviceIds: [],
         isActive: true,
       });
@@ -70,7 +74,10 @@ const CreateUserPage: React.FC = () => {
   const handleSubmitCustomer = async (data: CustomerForm) => {
     try {
       await customerService.addCustomer({
-        ...data,
+        name: data.name,
+        phone: data.phone,
+        email: data.email || "",
+        birthdate: data.birthdate,
         createdAt: new Date().toISOString(),
         totalAppointments: 0,
       });
