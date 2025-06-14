@@ -18,6 +18,7 @@ import StatsPage from "./pages/StatsPage";
 import ConfigPage from "./pages/ConfigPage";
 import LoginPage from "./pages/LoginPage";
 import NotFound from "./pages/NotFound";
+import AppointmentDetailsPage from "./pages/AppointmentDetailsPage";
 
 // Portal Pages
 import PortalPage from "./pages/portal/PortalPage";
@@ -51,6 +52,7 @@ const App = () => (
               {/* Rotas públicas */}
               <Route path="/" element={<Index />} />
               <Route path="/agenda" element={<AgendaPage />} />
+              <Route path="/agenda/:id" element={<AppointmentDetailsPage />} />
               <Route path="/agendar" element={<AppointmentBookingPage />} />
               <Route path="/servicos" element={<ServicesPage />} />
               <Route path="/login" element={<LoginPage />} />
