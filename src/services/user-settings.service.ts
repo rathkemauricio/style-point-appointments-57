@@ -1,9 +1,11 @@
-
 import { UserSettings } from '../models/user-settings.model';
 
 class UserSettingsService {
   private readonly SETTINGS_KEY = 'user_settings';
 
+  /**
+   * Salvar configurações do usuário
+   */
   saveSettings(settings: UserSettings): void {
     try {
       const allSettings = this.getAllSettings();
@@ -14,6 +16,9 @@ class UserSettingsService {
     }
   }
 
+  /**
+   * Obter configurações de um usuário específico
+   */
   getSettings(userId: string): UserSettings | null {
     try {
       const allSettings = this.getAllSettings();
@@ -24,6 +29,9 @@ class UserSettingsService {
     }
   }
 
+  /**
+   * Obter todas as configurações
+   */
   private getAllSettings(): Record<string, UserSettings> {
     try {
       const settingsJson = localStorage.getItem(this.SETTINGS_KEY);
@@ -35,10 +43,25 @@ class UserSettingsService {
   }
 
   /**
-   * Aplica o modo escuro ou claro no documento
+   * Aplicar tema de cores
    */
-  applyDarkMode(isDarkMode: boolean): void {
-    if (isDarkMode) {
+  applyColorTheme(theme: UserSettings['theme']): void {
+    const colors = [
+      { primary: '#C4804E', secondary: '#FBE6D4', accent: '#8B4513' }, // Caramelo
+      { primary: '#8B4513', secondary: '#2C1810', accent: '#C4804E' }, // Marrom escuro
+      { primary: '#A0522D', secondary: '#DEB887', accent: '#8B4513' }, // Marrom médio
+      { primary: '#D2691E', secondary: '#FFE4C4', accent: '#8B4513' }, // Marrom claro
+      { primary: '#CD853F', secondary: '#F5DEB3', accent: '#8B4513' }, // Caramelo dourado
+    ];
+
+    const selectedTheme = colors[theme.colorTheme];
+    if (selectedTheme) {
+      document.documentElement.style.setProperty('--primary-color', selectedTheme.primary);
+      document.documentElement.style.setProperty('--secondary-color', selectedTheme.secondary);
+      document.documentElement.style.setProperty('--accent-color', selectedTheme.accent);
+    }
+
+    if (theme.isDarkMode) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
@@ -46,4 +69,4 @@ class UserSettingsService {
   }
 }
 
-export default new UserSettingsService();
+export default new UserSettingsService(); 

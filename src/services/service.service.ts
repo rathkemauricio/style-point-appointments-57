@@ -4,7 +4,7 @@ import { mockServices } from '../mocks/mockData';
 
 class ServiceService {
   private services: Service[] = [...mockServices];
-
+  
   async getServices(): Promise<Service[]> {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -12,7 +12,7 @@ class ServiceService {
       }, 500);
     });
   }
-
+  
   async getServiceById(id: string): Promise<Service | undefined> {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -21,7 +21,7 @@ class ServiceService {
       }, 300);
     });
   }
-
+  
   async createService(service: Omit<Service, 'id'>): Promise<Service> {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -29,13 +29,13 @@ class ServiceService {
           id: `service-${Date.now()}`,
           ...service
         };
-
+        
         this.services.push(newService);
         resolve(newService);
       }, 300);
     });
   }
-
+  
   async updateService(id: string, data: Partial<Service>): Promise<Service> {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
@@ -44,17 +44,17 @@ class ServiceService {
           reject(new Error('Service not found'));
           return;
         }
-
+        
         this.services[index] = {
           ...this.services[index],
           ...data
         };
-
+        
         resolve(this.services[index]);
       }, 300);
     });
   }
-
+  
   async deleteService(id: string): Promise<boolean> {
     return new Promise((resolve) => {
       setTimeout(() => {

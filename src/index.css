@@ -1,64 +1,66 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Removido: tokens locais de cor duplicados, agora as variáveis vêm do serviço dinamicamente */
-
 @layer base {
   :root {
-    /* Tokens para fallback, sobrescritos pelo serviço JS */
-    --primary-color: #C4804E;
-    --secondary-color: #FBE6D4;
-    --accent-color: #8B4513;
+    /* Tema claro - tons caramelizados */
+    --primary-color: #C4804E; /* Caramelo médio */
+    --secondary-color: #FBE6D4; /* Caramelo bem claro */
+    --accent-color: #8B4513; /* Marrom avermelhado */
     --success-color: #4CAF50;
     --error-color: #EF4444;
     --warning-color: #F59E0B;
 
     --background: 0 0% 100%;
-    --foreground: 27 20% 19%;
+    --foreground: 20 15% 15%;
     --card: 0 0% 100%;
-    --card-foreground: 27 20% 19%;
-    --primary: 30 67% 51%;
+    --card-foreground: 20 15% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 15% 15%;
+    --primary: 25 45% 45%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 31 83% 91%;
-    --secondary-foreground: 30 67% 51%;
+    --secondary: 30 75% 95%;
+    --secondary-foreground: 25 45% 45%;
     --muted: 30 10% 95%;
     --muted-foreground: 25 5% 45%;
-    --accent: 25 53% 29%;
+    --accent: 25 75% 25%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 27 37% 90%;
-    --input: 27 37% 90%;
-    --ring: 30 67% 51%;
+    --border: 20 5% 90%;
+    --input: 20 5% 90%;
+    --ring: 25 45% 45%;
     --radius: 0.5rem;
   }
 
   .dark {
-    --primary-color: #3B82F6;
-    --secondary-color: #27354A;
-    --accent-color: #06B6D4;
+    /* Tema escuro - tons mais escuros e caramelizados */
+    --primary-color: #8B4513; /* Marrom escuro */
+    --secondary-color: #2C1810; /* Marrom muito escuro */
+    --accent-color: #C4804E; /* Caramelo médio */
 
-    --background: 218 41% 16%;
-    --foreground: 210 40% 98%;
-    --card: 218 41% 16%;
-    --card-foreground: 210 40% 98%;
-    --primary: 217 92% 60%;
-    --primary-foreground: 222 47% 11%;
-    --secondary: 220 26% 25%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 220 12% 22%;
-    --muted-foreground: 217 10% 64%;
-    --accent: 188 95% 43%;
-    --accent-foreground: 222 47% 11%;
+    --background: 20 25% 10%;
+    --foreground: 0 0% 95%;
+    --card: 20 25% 10%;
+    --card-foreground: 0 0% 95%;
+    --popover: 20 25% 10%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 25 45% 35%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 20 25% 15%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 20 25% 20%;
+    --muted-foreground: 0 0% 75%;
+    --accent: 25 45% 45%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 62% 30%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 17% 27%;
-    --input: 217 17% 27%;
-    --ring: 217 92% 60%;
+    --destructive-foreground: 0 0% 95%;
+    --border: 20 25% 20%;
+    --input: 20 25% 20%;
+    --ring: 25 45% 45%;
   }
 }
 
