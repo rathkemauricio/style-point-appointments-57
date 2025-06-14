@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -7,61 +6,57 @@
 
 @layer base {
   :root {
-    /* Tema claro - tons caramelizados */
-    --primary-color: #C4804E; /* Caramelo médio */
-    --secondary-color: #FBE6D4; /* Caramelo bem claro */
-    --accent-color: #8B4513; /* Marrom avermelhado */
+    /* Caramelized palette for light mode */
+    --primary-color: #C4804E; /* caramel */
+    --secondary-color: #FBE6D4;
+    --accent-color: #8B4513;
     --success-color: #4CAF50;
     --error-color: #EF4444;
     --warning-color: #F59E0B;
 
     --background: 0 0% 100%;
-    --foreground: 20 15% 15%;
+    --foreground: 27 20% 19%;
     --card: 0 0% 100%;
-    --card-foreground: 20 15% 15%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 20 15% 15%;
-    --primary: 25 45% 45%;
+    --card-foreground: 27 20% 19%;
+    --primary: 30 67% 51%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 30 75% 95%;
-    --secondary-foreground: 25 45% 45%;
+    --secondary: 31 83% 91%;
+    --secondary-foreground: 30 67% 51%;
     --muted: 30 10% 95%;
     --muted-foreground: 25 5% 45%;
-    --accent: 25 75% 25%;
+    --accent: 25 53% 29%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 20 5% 90%;
-    --input: 20 5% 90%;
-    --ring: 25 45% 45%;
+    --border: 27 37% 90%;
+    --input: 27 37% 90%;
+    --ring: 30 67% 51%;
     --radius: 0.5rem;
   }
 
   .dark {
-    /* Tema escuro - tons azul-acinzentado mais agradável */
-    --primary-color: #3B82F6; /* Azul vibrante */
-    --secondary-color: #1E293B; /* Azul escuro suave */
-    --accent-color: #06B6D4; /* Cyan para destaque */
+    /* Modern blue for dark mode */
+    --primary-color: #3B82F6;
+    --secondary-color: #27354A;
+    --accent-color: #06B6D4;
 
-    --background: 222 47% 11%;
+    --background: 218 41% 16%;
     --foreground: 210 40% 98%;
-    --card: 222 47% 11%;
+    --card: 218 41% 16%;
     --card-foreground: 210 40% 98%;
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217 91% 60%;
+    --primary: 217 92% 60%;
     --primary-foreground: 222 47% 11%;
-    --secondary: 215 28% 17%;
+    --secondary: 220 26% 25%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 215 28% 17%;
+    --muted: 220 12% 22%;
     --muted-foreground: 217 10% 64%;
     --accent: 188 95% 43%;
     --accent-foreground: 222 47% 11%;
     --destructive: 0 62% 30%;
     --destructive-foreground: 210 40% 98%;
-    --border: 215 28% 17%;
-    --input: 215 28% 17%;
-    --ring: 217 91% 60%;
+    --border: 217 17% 27%;
+    --input: 217 17% 27%;
+    --ring: 217 92% 60%;
   }
 }
 

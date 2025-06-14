@@ -1,7 +1,10 @@
+/* Color variables now aliased to Tailwind theme colors for consistency */
+
 :root {
-  --primary-color: #8B5CF6;
-  --secondary-color: #E5DEFF;
-  --accent-color: #7E69AB;
+  /* Main theme colors kept for legacy fallback and compatibility, but now only mapped from index.css */
+  --primary-color: var(--primary);
+  --secondary-color: var(--secondary);
+  --accent-color: var(--accent);
   --success-color: #10B981;
   --error-color: #EF4444;
   --warning-color: #F59E0B;
@@ -90,4 +93,4 @@
 .floating-action-button:hover {
   transform: scale(1.05);
   background-color: var(--accent-color);
-} 
+}
