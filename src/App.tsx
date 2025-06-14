@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -31,6 +30,7 @@ import PortalReviewsPage from "./pages/portal/PortalReviewsPage";
 
 // Admin Pages
 import WhiteLabelConfigPage from "./pages/admin/WhiteLabelConfigPage";
+import CreateUserPage from "./pages/admin/CreateUserPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -115,6 +115,14 @@ const App = () => (
                 element={
                   <ProtectedRoute requiredRole="admin">
                     <WhiteLabelConfigPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/usuarios/novo"
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <CreateUserPage />
                   </ProtectedRoute>
                 }
               />

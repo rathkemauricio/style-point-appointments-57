@@ -1,4 +1,3 @@
-
 import ApiService from './api.service';
 import appConfig from '../config/appConfig';
 import { Professional } from '../models/professional.model';
@@ -44,6 +43,24 @@ class ProfessionalService {
       console.error(`Failed to fetch professional ${id}:`, error);
       return null;
     }
+  }
+  
+  /**
+   * Cadastra um novo barbeiro (professional)
+   */
+  async createProfessional(data: Omit<Professional, 'id'>): Promise<Professional> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const newProfessional: Professional = {
+          ...data,
+          id: `barber-${Date.now()}`
+        };
+        // Simulação de cadastro no mock
+        // @ts-ignore
+        mockProfessionals.push(newProfessional);
+        resolve(newProfessional);
+      }, 300);
+    });
   }
 }
 
