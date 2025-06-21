@@ -29,6 +29,7 @@ import PortalReviewsPage from "./pages/portal/PortalReviewsPage";
 
 // Admin Pages
 import WhiteLabelConfigPage from "./pages/admin/WhiteLabelConfigPage";
+import UserManagementPage from "./pages/admin/UserManagementPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -92,6 +93,11 @@ const App = () => (
               <Route path="/admin/white-label" element={
                 <ProtectedRoute requiredRole="admin">
                   <WhiteLabelConfigPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/users" element={
+                <ProtectedRoute requiredRole="admin">
+                  <UserManagementPage />
                 </ProtectedRoute>
               } />
 

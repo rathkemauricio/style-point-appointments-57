@@ -8,22 +8,31 @@ interface ServiceCardProps {
   selected?: boolean;
   onSelect?: () => void;
   selectable?: boolean;
+  onRedirectToBooking?: (service: Service) => void;
 }
 
-const ServiceCard: React.FC<ServiceCardProps> = ({ 
-  service, 
+const ServiceCard: React.FC<ServiceCardProps> = ({
+  service,
   selected = false,
   onSelect,
-  selectable = false
+  selectable = true,
+  onRedirectToBooking
 }) => {
-  const handleClick = () => {
-    if (selectable && onSelect) {
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (onRedirectToBooking) {
+      // Se tem callback de redirecionamento, usa ele
+      onRedirectToBooking(service);
+    } else if (selectable && onSelect) {
+      // Caso contrário, usa o comportamento padrão de seleção
       onSelect();
     }
   };
-  
+
   return (
-    <div 
+    <div
       className={`
         card-shadow mb-4 transition-all
         ${selectable ? 'cursor-pointer hover:shadow-lg transform hover:-translate-y-1' : ''}
@@ -34,10 +43,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
       <div className="flex">
         {service.imageUrl && (
           <div className="w-24 h-24 overflow-hidden">
-            <img 
-              src={service.imageUrl} 
+            <img
+              src={service.imageUrl}
               alt={service.name}
-              className="w-full h-full object-cover" 
+              className="w-full h-full object-cover"
             />
           </div>
         )}

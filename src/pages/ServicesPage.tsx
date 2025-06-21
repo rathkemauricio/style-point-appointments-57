@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -11,6 +10,7 @@ import PermissionGuard from '../components/PermissionGuard';
 import ServiceCard from '../components/ServiceCard';
 import serviceService from '../services/service.service';
 import { usePermissions } from '../hooks/use-permissions';
+import { Service } from '../models/service.model';
 
 const ServicesPage: React.FC = () => {
   const navigate = useNavigate();
@@ -34,6 +34,15 @@ const ServicesPage: React.FC = () => {
 
   const handleNewService = () => {
     navigate('/servicos/novo');
+  };
+
+  const handleRedirectToBooking = (service: Service) => {
+    // Redireciona para a página de agendamento com o serviço pré-selecionado
+    navigate('/agendar', {
+      state: {
+        preselectedService: service
+      }
+    });
   };
 
   // Check if user has permission to view services
@@ -79,7 +88,7 @@ const ServicesPage: React.FC = () => {
                 key={service.id}
                 service={service}
                 selectable={true}
-                onSelect={() => navigate(`/servicos/${service.id}`)}
+                onRedirectToBooking={handleRedirectToBooking}
               />
             ))}
           </div>

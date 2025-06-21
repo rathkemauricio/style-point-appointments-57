@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { toast } from "sonner";
 import { Calendar, Clock, User, Check } from "lucide-react";
@@ -22,7 +22,8 @@ const STEPS = ['service', 'professional', 'datetime', 'customer', 'confirm'];
 
 const AppointmentBookingPage: React.FC = () => {
   const navigate = useNavigate();
-  
+  const location = useLocation();
+
   // State for multi-step form
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [formData, setFormData] = useState<AppointmentFormData>({
@@ -33,33 +34,46 @@ const AppointmentBookingPage: React.FC = () => {
     professionalId: '',
     serviceIds: [],
   });
-  
+
   // State for UI selections
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('');
-  
+
+  // Check if there's a preselected service from navigation state
+  useEffect(() => {
+    const preselectedService = location.state?.preselectedService;
+    if (preselectedService) {
+      // Pre-select the service and advance to next step
+      setFormData(prev => ({
+        ...prev,
+        serviceIds: [preselectedService.id]
+      }));
+      setCurrentStep(1); // Skip to professional selection step
+    }
+  }, [location.state]);
+
   // Queries for services and professionals
   const { data: services = [] } = useQuery({
     queryKey: ['services'],
     queryFn: () => serviceService.getServices()
   });
-  
+
   const { data: professionals = [] } = useQuery({
     queryKey: ['professionals'],
     queryFn: () => professionalService.getProfessionals(),
     enabled: currentStep >= 1
   });
-  
+
   // Query for availability once date and professional are selected
   const { data: availability, isLoading: isLoadingAvailability } = useQuery({
     queryKey: ['availability', selectedDate, formData.professionalId],
     queryFn: () => appointmentService.getAvailability(selectedDate, formData.professionalId),
     enabled: !!(selectedDate && formData.professionalId && currentStep === 2)
   });
-  
+
   // Generate dates for date selection
   const nextDates = getNextDays(14);
-  
+
   // Mutation for creating appointment
   const createAppointmentMutation = useMutation({
     mutationFn: async (data: AppointmentFormData) => {
@@ -67,7 +81,7 @@ const AppointmentBookingPage: React.FC = () => {
       const existingCustomer = await customerService.findCustomerByPhone(
         normalizePhoneNumber(data.customerPhone)
       );
-      
+
       // If customer exists, use their ID
       if (existingCustomer) {
         data.customerId = existingCustomer.id;
@@ -77,15 +91,15 @@ const AppointmentBookingPage: React.FC = () => {
           data.customerName,
           data.customerPhone
         );
-        
+
         if (newCustomer) {
           data.customerId = newCustomer.id;
         }
       }
-      
+
       // Create appointment
       if (!data.customerId) throw new Error('Customer ID is required');
-      
+
       const appointmentData = {
         date: data.date,
         startTime: data.startTime,
@@ -110,40 +124,40 @@ const AppointmentBookingPage: React.FC = () => {
       console.error('Appointment creation error:', error);
     }
   });
-  
+
   // Handle service selection
   const handleSelectService = (service: Service) => {
     const serviceId = service.id;
     let newServiceIds: string[];
-    
+
     if (formData.serviceIds.includes(serviceId)) {
       newServiceIds = formData.serviceIds.filter(id => id !== serviceId);
     } else {
       newServiceIds = [...formData.serviceIds, serviceId];
     }
-    
+
     setFormData({
       ...formData,
       serviceIds: newServiceIds
     });
   };
-  
+
   // Handle professional selection
   const handleSelectProfessional = (professional: Professional) => {
     setFormData({
       ...formData,
       professionalId: professional.id
     });
-    
+
     // Auto advance after selecting professional
     handleNextStep();
   };
-  
+
   // Handle date selection
   const handleSelectDate = (date: string) => {
     setSelectedDate(date);
   };
-  
+
   // Handle time slot selection
   const handleSelectTimeSlot = (startTime: string) => {
     setSelectedTimeSlot(startTime);
@@ -152,15 +166,15 @@ const AppointmentBookingPage: React.FC = () => {
       date: selectedDate,
       startTime: startTime
     });
-    
+
     // Auto advance after selecting time
     handleNextStep();
   };
-  
+
   // Input change handler
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
+
     if (name === 'customerPhone') {
       setFormData({
         ...formData,
@@ -173,51 +187,51 @@ const AppointmentBookingPage: React.FC = () => {
       });
     }
   };
-  
+
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     createAppointmentMutation.mutate(formData);
   };
-  
+
   // Navigation between steps
   const handleNextStep = () => {
     if (currentStep < STEPS.length - 1) {
       setCurrentStep(currentStep + 1);
     }
   };
-  
+
   const handlePreviousStep = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
-  
+
   // Get selected services details
   const selectedServices = services.filter(
     service => formData.serviceIds.includes(service.id)
   );
-  
+
   // Get selected professional details
   const selectedProfessional = professionals.find(
     p => p.id === formData.professionalId
   );
-  
+
   // Calculate total price
   const totalPrice = selectedServices.reduce(
-    (total, service) => total + service.price, 
+    (total, service) => total + service.price,
     0
   );
-  
+
   // Render the current step
   const renderStep = () => {
-    switch(STEPS[currentStep]) {
+    switch (STEPS[currentStep]) {
       case 'service':
         return (
           <div>
             <h2 className="text-xl font-semibold mb-4">Selecione os serviços</h2>
             {services.map(service => (
-              <ServiceCard 
+              <ServiceCard
                 key={service.id}
                 service={service}
                 selected={formData.serviceIds.includes(service.id)}
@@ -225,7 +239,7 @@ const AppointmentBookingPage: React.FC = () => {
                 onSelect={() => handleSelectService(service)}
               />
             ))}
-            
+
             {formData.serviceIds.length > 0 && (
               <button
                 className="btn-primary w-full mt-4"
@@ -236,12 +250,12 @@ const AppointmentBookingPage: React.FC = () => {
             )}
           </div>
         );
-        
+
       case 'professional':
         return (
           <div>
             <h2 className="text-xl font-semibold mb-4">Selecione o profissional</h2>
-            
+
             {appConfig.isMultiProfessional ? (
               professionals.map(professional => (
                 <ProfessionalCard
@@ -263,12 +277,12 @@ const AppointmentBookingPage: React.FC = () => {
             )}
           </div>
         );
-        
+
       case 'datetime':
         return (
           <div>
             <h2 className="text-xl font-semibold mb-4">Selecione a data e horário</h2>
-            
+
             {/* Date selection */}
             <div className="mb-6">
               <h3 className="text-md font-medium mb-3">Data</h3>
@@ -276,11 +290,10 @@ const AppointmentBookingPage: React.FC = () => {
                 {nextDates.map(date => (
                   <div
                     key={date}
-                    className={`flex flex-col items-center min-w-[4.5rem] p-2 rounded-lg cursor-pointer ${
-                      selectedDate === date 
-                        ? 'bg-primary text-white' 
+                    className={`flex flex-col items-center min-w-[4.5rem] p-2 rounded-lg cursor-pointer ${selectedDate === date
+                        ? 'bg-primary text-white'
                         : 'bg-gray-100 hover:bg-gray-200'
-                    }`}
+                      }`}
                     onClick={() => handleSelectDate(date)}
                   >
                     <span className="text-xs">
@@ -293,12 +306,12 @@ const AppointmentBookingPage: React.FC = () => {
                 ))}
               </div>
             </div>
-            
+
             {/* Time slot selection */}
             {selectedDate && (
               <div>
                 <h3 className="text-md font-medium mb-3">Horário</h3>
-                
+
                 {isLoadingAvailability ? (
                   <div className="text-center py-4">
                     <div className="animate-pulse">Carregando horários...</div>
@@ -310,11 +323,10 @@ const AppointmentBookingPage: React.FC = () => {
                       .map(slot => (
                         <div
                           key={slot.startTime}
-                          className={`py-2 px-3 text-center rounded-lg cursor-pointer ${
-                            selectedTimeSlot === slot.startTime
+                          className={`py-2 px-3 text-center rounded-lg cursor-pointer ${selectedTimeSlot === slot.startTime
                               ? 'bg-primary text-white'
                               : 'bg-gray-100 hover:bg-gray-200'
-                          }`}
+                            }`}
                           onClick={() => handleSelectTimeSlot(slot.startTime)}
                         >
                           <span className="text-sm">{slot.startTime}</span>
@@ -326,12 +338,12 @@ const AppointmentBookingPage: React.FC = () => {
             )}
           </div>
         );
-        
+
       case 'customer':
         return (
           <div>
             <h2 className="text-xl font-semibold mb-4">Seus dados</h2>
-            
+
             <form className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Seu nome</label>
@@ -345,7 +357,7 @@ const AppointmentBookingPage: React.FC = () => {
                   required
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium mb-1">Seu telefone</label>
                 <input
@@ -358,7 +370,7 @@ const AppointmentBookingPage: React.FC = () => {
                   required
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium mb-1">Observações (opcional)</label>
                 <input
@@ -370,7 +382,7 @@ const AppointmentBookingPage: React.FC = () => {
                   placeholder="Alguma observação especial?"
                 />
               </div>
-              
+
               <button
                 type="button"
                 className="btn-primary w-full mt-6"
@@ -382,12 +394,12 @@ const AppointmentBookingPage: React.FC = () => {
             </form>
           </div>
         );
-        
+
       case 'confirm':
         return (
           <div>
             <h2 className="text-xl font-semibold mb-4">Confirmar Agendamento</h2>
-            
+
             <div className="card-shadow p-4 mb-4">
               <div className="flex items-center mb-3">
                 <Calendar size={20} className="text-primary mr-2" />
@@ -395,12 +407,12 @@ const AppointmentBookingPage: React.FC = () => {
                   {selectedDate ? formatDate(selectedDate) : ''} às {formData.startTime}
                 </span>
               </div>
-              
+
               <div className="flex items-center mb-3">
                 <User size={20} className="text-primary mr-2" />
                 <span>{selectedProfessional?.name}</span>
               </div>
-              
+
               <div className="border-t border-gray-200 my-3 pt-3">
                 <h3 className="font-medium mb-2">Serviços selecionados:</h3>
                 <ul>
@@ -426,7 +438,7 @@ const AppointmentBookingPage: React.FC = () => {
                   </span>
                 </div>
               </div>
-              
+
               <div className="border-t border-gray-200 my-3 pt-3">
                 <h3 className="font-medium mb-2">Seus dados:</h3>
                 <p>{formData.customerName}</p>
@@ -434,7 +446,7 @@ const AppointmentBookingPage: React.FC = () => {
                 {formData.notes && <p className="text-sm mt-1">Obs: {formData.notes}</p>}
               </div>
             </div>
-            
+
             <button
               className="btn-primary w-full flex items-center justify-center"
               onClick={handleSubmit}
@@ -451,34 +463,32 @@ const AppointmentBookingPage: React.FC = () => {
             </button>
           </div>
         );
-        
+
       default:
         return null;
     }
   };
-  
+
   return (
     <div className="min-h-screen bg-background">
       <Header title="Agendar Horário" showBackButton />
-      
+
       {/* Progress Steps */}
       <div className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 py-3">
           <div className="flex justify-between">
             {STEPS.map((step, index) => (
-              <div 
+              <div
                 key={step}
-                className={`flex items-center ${
-                  index < currentStep ? 'text-primary' :
-                  index === currentStep ? 'text-primary' :
-                  'text-gray-400'
-                }`}
+                className={`flex items-center ${index < currentStep ? 'text-primary' :
+                    index === currentStep ? 'text-primary' :
+                      'text-gray-400'
+                  }`}
               >
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center border ${
-                  index < currentStep ? 'bg-primary border-primary text-white' :
-                  index === currentStep ? 'bg-primary border-primary text-white' :
-                  'border-gray-300'
-                }`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center border ${index < currentStep ? 'bg-primary border-primary text-white' :
+                    index === currentStep ? 'bg-primary border-primary text-white' :
+                      'border-gray-300'
+                  }`}>
                   {index < currentStep ? <Check size={16} /> : index + 1}
                 </div>
                 <span className="ml-2 hidden sm:inline">{step}</span>
@@ -516,11 +526,10 @@ const AppointmentBookingPage: React.FC = () => {
               <button
                 key={date}
                 onClick={() => handleSelectDate(date)}
-                className={`p-3 rounded-lg text-center transition-colors ${
-                  selectedDate === date
+                className={`p-3 rounded-lg text-center transition-colors ${selectedDate === date
                     ? 'bg-primary text-white'
                     : 'bg-gray-100 hover:bg-gray-200'
-                }`}
+                  }`}
               >
                 {formatDate(date)}
               </button>
@@ -537,11 +546,10 @@ const AppointmentBookingPage: React.FC = () => {
                 <button
                   key={slot.startTime}
                   onClick={() => handleSelectTimeSlot(slot.startTime)}
-                  className={`p-3 rounded-lg text-center transition-colors ${
-                    selectedTimeSlot === slot.startTime
+                  className={`p-3 rounded-lg text-center transition-colors ${selectedTimeSlot === slot.startTime
                       ? 'bg-primary text-white'
                       : 'bg-gray-100 hover:bg-gray-200'
-                  }`}
+                    }`}
                 >
                   {slot.startTime}
                 </button>

@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Calendar, Scissors, DollarSign, Star, Users } from 'lucide-react';
+import { Calendar, Scissors, DollarSign, Star, Users, Settings, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import AuthHeader from '../../components/AuthHeader';
@@ -19,13 +18,13 @@ const PortalPage: React.FC = () => {
   const { user } = useAuth();
   const { hasPermission, canViewFinancials } = usePermissions();
   const navigate = useNavigate();
-  
+
   const { data: professional } = useQuery({
     queryKey: ['professional', user?.professionalId],
     queryFn: () => professionalService.getProfessionalById(user?.professionalId || ''),
     enabled: !!user?.professionalId,
   });
-  
+
   // Obter estatísticas
   const today = new Date().toISOString().split('T')[0];
   const { data: stats } = useQuery({
@@ -34,7 +33,7 @@ const PortalPage: React.FC = () => {
       const startDate = new Date();
       startDate.setDate(1); // Primeiro dia do mês atual
       const endDate = new Date();
-      
+
       const appointments = await appointmentService.getAppointmentsByProfessionalId(
         user?.professionalId || '',
         startDate.toISOString().split('T')[0],
@@ -48,7 +47,7 @@ const PortalPage: React.FC = () => {
     },
     enabled: canViewFinancials()
   });
-  
+
   // Formatar data para exibição
   const formatDate = (dateStr: string): string => {
     const date = new Date(dateStr);
@@ -58,31 +57,31 @@ const PortalPage: React.FC = () => {
       year: 'numeric'
     });
   };
-  
+
   return (
     <div className="flex flex-col min-h-screen">
       <AuthHeader title="Portal do Profissional" />
-      
+
       <div className="flex-1 page-container py-6">
         {professional && (
           <div className="mb-8 flex items-center">
             <div className="mr-4">
               <div className="h-20 w-20 rounded-full overflow-hidden">
-                <img 
-                  src={professional.avatarUrl || 'https://via.placeholder.com/100'} 
+                <img
+                  src={professional.avatarUrl || 'https://via.placeholder.com/100'}
                   alt={professional.name}
                   className="h-full w-full object-cover"
                 />
               </div>
             </div>
-            
+
             <div>
               <h1 className="text-2xl font-bold">{professional.name}</h1>
               <p className="text-gray-600">{professional.title || "Barbeiro"}</p>
             </div>
           </div>
         )}
-        
+
         {/* Cards estatísticos - only show if user has permissions */}
         <PermissionGuard permission="view_agenda">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -96,7 +95,7 @@ const PortalPage: React.FC = () => {
                 <p className="text-2xl font-bold">{stats?.total || 0}</p>
               </CardContent>
             </Card>
-            
+
             <PermissionGuard permission="view_revenue">
               <Card>
                 <CardHeader className="pb-2">
@@ -111,7 +110,7 @@ const PortalPage: React.FC = () => {
                 </CardContent>
               </Card>
             </PermissionGuard>
-            
+
             <PermissionGuard permission="view_reviews">
               <Card>
                 <CardHeader className="pb-2">
@@ -125,7 +124,7 @@ const PortalPage: React.FC = () => {
                 </CardContent>
               </Card>
             </PermissionGuard>
-            
+
             <PermissionGuard permission="view_customers">
               <Card>
                 <CardHeader className="pb-2">
@@ -140,12 +139,12 @@ const PortalPage: React.FC = () => {
             </PermissionGuard>
           </div>
         </PermissionGuard>
-        
+
         {/* Menu rápido - with permission guards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <PermissionGuard permission="view_agenda">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="h-auto py-6 flex flex-col items-center justify-center"
               onClick={() => navigate('/portal/agenda')}
             >
@@ -153,10 +152,10 @@ const PortalPage: React.FC = () => {
               <span>Agenda</span>
             </Button>
           </PermissionGuard>
-          
+
           <PermissionGuard permission="view_services">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="h-auto py-6 flex flex-col items-center justify-center"
               onClick={() => navigate('/portal/services')}
             >
@@ -164,10 +163,10 @@ const PortalPage: React.FC = () => {
               <span>Meus Serviços</span>
             </Button>
           </PermissionGuard>
-          
+
           <PermissionGuard permission="view_revenue">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="h-auto py-6 flex flex-col items-center justify-center"
               onClick={() => navigate('/portal/revenue')}
             >
@@ -175,10 +174,10 @@ const PortalPage: React.FC = () => {
               <span>Faturamento</span>
             </Button>
           </PermissionGuard>
-          
+
           <PermissionGuard permission="view_customers">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="h-auto py-6 flex flex-col items-center justify-center"
               onClick={() => navigate('/portal/customers')}
             >
@@ -187,12 +186,50 @@ const PortalPage: React.FC = () => {
             </Button>
           </PermissionGuard>
         </div>
-        
+
+        {/* Seção de Admin - apenas para administradores */}
+        {user?.role === 'admin' && (
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Shield className="h-5 w-5" />
+              Administração
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <Button
+                variant="outline"
+                className="h-auto py-6 flex flex-col items-center justify-center border-2 border-blue-200 hover:border-blue-300"
+                onClick={() => navigate('/admin/users')}
+              >
+                <Users className="h-8 w-8 mb-2 text-blue-600" />
+                <span className="text-blue-600 font-medium">Gerenciar Usuários</span>
+              </Button>
+
+              <Button
+                variant="outline"
+                className="h-auto py-6 flex flex-col items-center justify-center border-2 border-purple-200 hover:border-purple-300"
+                onClick={() => navigate('/admin/white-label')}
+              >
+                <Settings className="h-8 w-8 mb-2 text-purple-600" />
+                <span className="text-purple-600 font-medium">Configurações</span>
+              </Button>
+
+              <Button
+                variant="outline"
+                className="h-auto py-6 flex flex-col items-center justify-center border-2 border-green-200 hover:border-green-300"
+                onClick={() => navigate('/config')}
+              >
+                <Settings className="h-8 w-8 mb-2 text-green-600" />
+                <span className="text-green-600 font-medium">Configurações Gerais</span>
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Próximos agendamentos - only if user can view agenda */}
         <PermissionGuard permission="view_agenda">
           <div className="card-shadow rounded-lg p-4 mb-8">
             <h2 className="text-lg font-semibold mb-4">Próximos Agendamentos</h2>
-            
+
             <div className="space-y-4">
               <div className="flex justify-between items-center p-3 border-b">
                 <div>
@@ -204,7 +241,7 @@ const PortalPage: React.FC = () => {
                   <p className="font-medium">15:00</p>
                 </div>
               </div>
-              
+
               <div className="flex justify-between items-center p-3 border-b">
                 <div>
                   <p className="font-medium">André Oliveira</p>
@@ -215,7 +252,7 @@ const PortalPage: React.FC = () => {
                   <p className="font-medium">16:30</p>
                 </div>
               </div>
-              
+
               <div className="flex justify-between items-center p-3">
                 <div>
                   <p className="font-medium">Marcelo Santos</p>
@@ -227,10 +264,10 @@ const PortalPage: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="mt-4 text-center">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => navigate('/portal/agenda')}
               >
                 Ver todos os agendamentos
@@ -238,21 +275,21 @@ const PortalPage: React.FC = () => {
             </div>
           </div>
         </PermissionGuard>
-        
+
         {/* Avaliações recentes - only if user can view reviews */}
         <PermissionGuard permission="view_reviews">
           <div className="card-shadow rounded-lg p-4">
             <h2 className="text-lg font-semibold mb-4">Avaliações Recentes</h2>
-            
+
             <div className="space-y-4">
               <div className="p-3 border-b">
                 <div className="flex justify-between mb-2">
                   <p className="font-medium">Maria Oliveira</p>
                   <div className="flex">
                     {[...Array(5)].map((_, i) => (
-                      <Star 
-                        key={i} 
-                        className={`h-4 w-4 ${i < 5 ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
+                      <Star
+                        key={i}
+                        className={`h-4 w-4 ${i < 5 ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
                       />
                     ))}
                   </div>
@@ -264,15 +301,15 @@ const PortalPage: React.FC = () => {
                   {formatDate(new Date(Date.now() - 86400000).toISOString())}
                 </p>
               </div>
-              
+
               <div className="p-3 border-b">
                 <div className="flex justify-between mb-2">
                   <p className="font-medium">João Paulo</p>
                   <div className="flex">
                     {[...Array(5)].map((_, i) => (
-                      <Star 
-                        key={i} 
-                        className={`h-4 w-4 ${i < 4 ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
+                      <Star
+                        key={i}
+                        className={`h-4 w-4 ${i < 4 ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
                       />
                     ))}
                   </div>
@@ -285,10 +322,10 @@ const PortalPage: React.FC = () => {
                 </p>
               </div>
             </div>
-            
+
             <div className="mt-4 text-center">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => navigate('/portal/reviews')}
               >
                 Ver todas as avaliações
@@ -297,7 +334,7 @@ const PortalPage: React.FC = () => {
           </div>
         </PermissionGuard>
       </div>
-      
+
       <Footer />
     </div>
   );

@@ -117,4 +117,27 @@ export const apiConfig = {
         fidelityPoints: '/fidelity/points',
         fidelityRewards: '/fidelity/rewards'
     }
-}; 
+};
+
+export interface ApiResponse<T = any> {
+    data: T;
+    message?: string;
+    error?: string;
+}
+
+export interface PaginatedResponse<T = any> {
+    data: T[];
+    pagination: {
+        page: number;
+        limit: number;
+        total: number;
+        totalPages: number;
+    };
+    message?: string;
+    error?: string;
+}
+
+export interface ApiError {
+    message: string;
+    [key: string]: any;
+} 
