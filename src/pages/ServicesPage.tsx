@@ -6,20 +6,26 @@ import { Plus, Settings } from "lucide-react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import FloatingActionButton from '../components/FloatingActionButton';
-import PermissionGuard from '../components/PermissionGuard';
 import ServiceCard from '../components/ServiceCard';
 import serviceService from '../services/service.service';
+<<<<<<< HEAD
 import { usePermissions } from '../hooks/use-permissions';
 import { Service } from '../models/service.model';
+=======
+import appConfig from '../config/appConfig';
+import { useAuth } from '../hooks/use-auth';
+>>>>>>> 3e894965b0d555e42b6cce9114cc89725195ce25
 
 const ServicesPage: React.FC = () => {
   const navigate = useNavigate();
-  const { hasPermission, canManageServices } = usePermissions();
+  const { user, isAuthenticated } = useAuth();
+  // Admins podem gerenciar serviços (ver botões extra); barbeiros podem apenas visualizar, clientes/anônimos só veem listagem
+  const isAdmin = user?.role === "admin";
+  const isProfessional = user?.role === "professional";
 
   const { data: services = [] } = useQuery({
     queryKey: ['services'],
-    queryFn: () => serviceService.getServices(),
-    enabled: hasPermission('view_services')
+    queryFn: () => serviceService.getServices()
   });
 
   // Group services by category
@@ -36,6 +42,7 @@ const ServicesPage: React.FC = () => {
     navigate('/servicos/novo');
   };
 
+<<<<<<< HEAD
   const handleRedirectToBooking = (service: Service) => {
     // Redireciona para a página de agendamento com o serviço pré-selecionado
     navigate('/agendar', {
@@ -61,20 +68,22 @@ const ServicesPage: React.FC = () => {
     );
   }
 
+=======
+>>>>>>> 3e894965b0d555e42b6cce9114cc89725195ce25
   return (
     <div className="flex flex-col min-h-screen">
       <Header
         title="Nossos Serviços"
         showBackButton={true}
         rightAction={
-          <PermissionGuard permission="create_service">
+          isAdmin ? (
             <button
               className="p-2 rounded-full hover:bg-gray-100"
               onClick={() => navigate('/servicos/gerenciar')}
             >
               <Settings size={20} className="text-primary" />
             </button>
-          </PermissionGuard>
+          ) : null
         }
       />
 
@@ -87,8 +96,18 @@ const ServicesPage: React.FC = () => {
               <ServiceCard
                 key={service.id}
                 service={service}
+<<<<<<< HEAD
                 selectable={true}
                 onRedirectToBooking={handleRedirectToBooking}
+=======
+                selectable={!!(isProfessional || isAdmin)}
+                onSelect={() => {
+                  // Só profissionais e admins podem abrir tela de edição (exemplo didático de acesso)
+                  if (isProfessional || isAdmin) {
+                    navigate(`/servicos/${service.id}`);
+                  }
+                }}
+>>>>>>> 3e894965b0d555e42b6cce9114cc89725195ce25
               />
             ))}
           </div>
@@ -97,24 +116,24 @@ const ServicesPage: React.FC = () => {
         {services.length === 0 && (
           <div className="flex flex-col items-center justify-center py-8">
             <p className="text-gray-500">Nenhum serviço cadastrado</p>
-            <PermissionGuard permission="create_service">
+            {isAdmin && (
               <button
                 className="mt-4 text-primary hover:text-primary/80 transition-colors"
                 onClick={handleNewService}
               >
                 Cadastrar serviços
               </button>
-            </PermissionGuard>
+            )}
           </div>
         )}
       </div>
 
-      <PermissionGuard permission="create_service">
+      {isAdmin && (
         <FloatingActionButton
           onClick={handleNewService}
           icon={<Plus size={24} />}
         />
-      </PermissionGuard>
+      )}
 
       <Footer />
     </div>

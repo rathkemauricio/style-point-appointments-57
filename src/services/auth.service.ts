@@ -7,16 +7,17 @@ import { API_ENDPOINTS } from '../config/api.config';
 class AuthService extends BaseService {
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'auth_user';
-
+  
   constructor() {
     super();
   }
-
+  
   /**
    * Login com email e senha
    */
   async login(credentials: LoginCredentials): Promise<LoginResponse | null> {
     try {
+<<<<<<< HEAD
       // Primeiro, tenta fazer login na API real
       const response = await this.post<LoginResponse>(
         API_ENDPOINTS.AUTH.LOGIN,
@@ -29,9 +30,35 @@ class AuthService extends BaseService {
         const loginResponse: LoginResponse = {
           user: response.data.user,
           token: response.data.token
+=======
+      // Em um app real, chamaríamos a API
+      // const response = await this.api.post('/auth/login', credentials);
+      
+      // Para desenvolvimento, simulamos uma resposta bem-sucedida
+      // Mock de login do profissional baseado no email (para fins de demonstração)
+      const professional = mockProfessionals.find(p => 
+        `${p.name.toLowerCase().replace(/\s/g, '')}@barbearia.com` === credentials.email);
+      
+      // Para teste, permitir login com as credenciais de exemplo
+      if (credentials.email === 'joao@barbearia.com' && credentials.password === '123456') {
+        // Usar o primeiro profissional como exemplo para o login de teste
+        const testProfessional = mockProfessionals[0];
+        
+        const authUser: AuthUser = {
+          id: `user-${testProfessional.id}`,
+          email: credentials.email,
+          role: 'professional',
+          professionalId: testProfessional.id,
         };
-
+        
+        const response: LoginResponse = {
+          user: authUser,
+          token: `mock-token-${Date.now()}`
+>>>>>>> 3e894965b0d555e42b6cce9114cc89725195ce25
+        };
+        
         // Salva na localStorage
+<<<<<<< HEAD
         localStorage.setItem(this.TOKEN_KEY, loginResponse.token);
         localStorage.setItem(this.USER_KEY, JSON.stringify(loginResponse.user));
 
@@ -100,15 +127,34 @@ class AuthService extends BaseService {
     );
 
     if (testUser) {
+=======
+        localStorage.setItem(this.TOKEN_KEY, response.token);
+        localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
+        
+        return response;
+      }
+      
+      if (!professional) {
+        throw new Error('Credenciais inválidas');
+      }
+      
+      const authUser: AuthUser = {
+        id: `user-${professional.id}`,
+        email: credentials.email,
+        role: 'professional',
+        professionalId: professional.id,
+      };
+      
+>>>>>>> 3e894965b0d555e42b6cce9114cc89725195ce25
       const response: LoginResponse = {
         user: testUser.user,
         token: `mock-token-${Date.now()}`
       };
-
+      
       // Salva na localStorage
       localStorage.setItem(this.TOKEN_KEY, response.token);
       localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
-
+      
       return response;
     }
 
@@ -226,7 +272,7 @@ class AuthService extends BaseService {
       return null;
     }
   }
-
+  
   /**
    * Logout do usuário atual
    */
@@ -234,28 +280,28 @@ class AuthService extends BaseService {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
   }
-
+  
   /**
    * Verifica se o usuário está autenticado
    */
   isAuthenticated(): boolean {
     return !!this.getToken();
   }
-
+  
   /**
    * Obtém o token de autenticação
    */
   getToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
   }
-
+  
   /**
    * Obtém os dados do usuário logado
    */
   getCurrentUser(): AuthUser | null {
     const userJson = localStorage.getItem(this.USER_KEY);
     if (!userJson) return null;
-
+    
     try {
       return JSON.parse(userJson) as AuthUser;
     } catch (error) {
@@ -263,7 +309,7 @@ class AuthService extends BaseService {
       return null;
     }
   }
-
+  
   /**
    * Verifica se o usuário tem um papel específico
    */
@@ -271,7 +317,7 @@ class AuthService extends BaseService {
     const user = this.getCurrentUser();
     return user?.role === role;
   }
-
+  
   /**
    * Verifica se o usuário é um profissional
    */

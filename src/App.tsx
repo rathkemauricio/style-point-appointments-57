@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,10 +15,12 @@ import Index from "./pages/Index";
 import AgendaPage from "./pages/AgendaPage";
 import AppointmentBookingPage from "./pages/AppointmentBookingPage";
 import ServicesPage from "./pages/ServicesPage";
+import ServiceDetailsPage from "./pages/ServiceDetailsPage";
 import StatsPage from "./pages/StatsPage";
 import ConfigPage from "./pages/ConfigPage";
 import LoginPage from "./pages/LoginPage";
 import NotFound from "./pages/NotFound";
+import AppointmentDetailsPage from "./pages/AppointmentDetailsPage";
 
 // Portal Pages
 import PortalPage from "./pages/portal/PortalPage";
@@ -29,7 +32,11 @@ import PortalReviewsPage from "./pages/portal/PortalReviewsPage";
 
 // Admin Pages
 import WhiteLabelConfigPage from "./pages/admin/WhiteLabelConfigPage";
+<<<<<<< HEAD
 import UserManagementPage from "./pages/admin/UserManagementPage";
+=======
+import CreateUserPage from "./pages/admin/CreateUserPage";
+>>>>>>> 3e894965b0d555e42b6cce9114cc89725195ce25
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -49,46 +56,75 @@ const App = () => (
         <AuthProvider>
           <SettingsProvider>
             <Routes>
-              {/* Rotas públicas */}
+              {/* Rotas públicas - acessíveis a todos */}
               <Route path="/" element={<Index />} />
               <Route path="/agenda" element={<AgendaPage />} />
+              <Route path="/agenda/:id" element={<AppointmentDetailsPage />} />
               <Route path="/agendar" element={<AppointmentBookingPage />} />
               <Route path="/servicos" element={<ServicesPage />} />
+              <Route path="/servicos/:id" element={<ServiceDetailsPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/config" element={<ConfigPage />} />
 
-              {/* Rotas protegidas - Portal do Profissional */}
-              <Route path="/portal" element={
-                <ProtectedRoute requiredRole="professional">
-                  <PortalPage />
-                </ProtectedRoute>
-              } />
-              <Route path="/portal/agenda" element={
-                <ProtectedRoute requiredRole="professional">
-                  <PortalAgendaPage />
-                </ProtectedRoute>
-              } />
-              <Route path="/portal/services" element={
-                <ProtectedRoute requiredRole="professional">
-                  <PortalServicesPage />
-                </ProtectedRoute>
-              } />
-              <Route path="/portal/revenue" element={
-                <ProtectedRoute requiredRole="professional">
-                  <PortalRevenuePage />
-                </ProtectedRoute>
-              } />
-              <Route path="/portal/customers" element={
-                <ProtectedRoute requiredRole="professional">
-                  <PortalCustomersPage />
-                </ProtectedRoute>
-              } />
-              <Route path="/portal/reviews" element={
-                <ProtectedRoute requiredRole="professional">
-                  <PortalReviewsPage />
-                </ProtectedRoute>
-              } />
+              {/* Portal do Profissional - apenas para usuários autenticados como professional */}
+              <Route
+                path="/portal"
+                element={
+                  <ProtectedRoute requiredRole="professional">
+                    <PortalPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/portal/agenda"
+                element={
+                  <ProtectedRoute requiredRole="professional">
+                    <PortalAgendaPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/portal/agenda/:id"
+                element={
+                  <ProtectedRoute requiredRole="professional">
+                    <AppointmentDetailsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/portal/services"
+                element={
+                  <ProtectedRoute requiredRole="professional">
+                    <PortalServicesPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/portal/revenue"
+                element={
+                  <ProtectedRoute requiredRole="professional">
+                    <PortalRevenuePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/portal/customers"
+                element={
+                  <ProtectedRoute requiredRole="professional">
+                    <PortalCustomersPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/portal/reviews"
+                element={
+                  <ProtectedRoute requiredRole="professional">
+                    <PortalReviewsPage />
+                  </ProtectedRoute>
+                }
+              />
 
+<<<<<<< HEAD
               {/* Rotas de administração */}
               <Route path="/admin/white-label" element={
                 <ProtectedRoute requiredRole="admin">
@@ -100,11 +136,37 @@ const App = () => (
                   <UserManagementPage />
                 </ProtectedRoute>
               } />
+=======
+              {/* Rotas de administração - apenas para usuários com papel admin */}
+              <Route
+                path="/admin/white-label"
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <WhiteLabelConfigPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/usuarios/novo"
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <CreateUserPage />
+                  </ProtectedRoute>
+                }
+              />
+>>>>>>> 3e894965b0d555e42b6cce9114cc89725195ce25
 
-              {/* Rotas de estatísticas */}
-              <Route path="/estatisticas" element={<StatsPage />} />
+              {/* Rotas de estatísticas disponíveis apenas para admin e professional */}
+              <Route
+                path="/estatisticas"
+                element={
+                  <ProtectedRoute>
+                    <StatsPage />
+                  </ProtectedRoute>
+                }
+              />
 
-              {/* Rota 404 */}
+              {/* Fallback: página não encontrada para qualquer outra rota */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </SettingsProvider>
