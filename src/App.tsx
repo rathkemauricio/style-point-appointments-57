@@ -1,4 +1,5 @@
 
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -32,11 +33,7 @@ import PortalReviewsPage from "./pages/portal/PortalReviewsPage";
 
 // Admin Pages
 import WhiteLabelConfigPage from "./pages/admin/WhiteLabelConfigPage";
-<<<<<<< HEAD
-import UserManagementPage from "./pages/admin/UserManagementPage";
-=======
 import CreateUserPage from "./pages/admin/CreateUserPage";
->>>>>>> 3e894965b0d555e42b6cce9114cc89725195ce25
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -124,19 +121,6 @@ const App = () => (
                 }
               />
 
-<<<<<<< HEAD
-              {/* Rotas de administração */}
-              <Route path="/admin/white-label" element={
-                <ProtectedRoute requiredRole="admin">
-                  <WhiteLabelConfigPage />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/users" element={
-                <ProtectedRoute requiredRole="admin">
-                  <UserManagementPage />
-                </ProtectedRoute>
-              } />
-=======
               {/* Rotas de administração - apenas para usuários com papel admin */}
               <Route
                 path="/admin/white-label"
@@ -154,7 +138,6 @@ const App = () => (
                   </ProtectedRoute>
                 }
               />
->>>>>>> 3e894965b0d555e42b6cce9114cc89725195ce25
 
               {/* Rotas de estatísticas disponíveis apenas para admin e professional */}
               <Route

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -8,13 +9,8 @@ import Footer from '../components/Footer';
 import FloatingActionButton from '../components/FloatingActionButton';
 import ServiceCard from '../components/ServiceCard';
 import serviceService from '../services/service.service';
-<<<<<<< HEAD
-import { usePermissions } from '../hooks/use-permissions';
-import { Service } from '../models/service.model';
-=======
-import appConfig from '../config/appConfig';
 import { useAuth } from '../hooks/use-auth';
->>>>>>> 3e894965b0d555e42b6cce9114cc89725195ce25
+import { Service } from '../models/service.model';
 
 const ServicesPage: React.FC = () => {
   const navigate = useNavigate();
@@ -42,7 +38,6 @@ const ServicesPage: React.FC = () => {
     navigate('/servicos/novo');
   };
 
-<<<<<<< HEAD
   const handleRedirectToBooking = (service: Service) => {
     // Redireciona para a página de agendamento com o serviço pré-selecionado
     navigate('/agendar', {
@@ -52,24 +47,6 @@ const ServicesPage: React.FC = () => {
     });
   };
 
-  // Check if user has permission to view services
-  if (!hasPermission('view_services')) {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <Header title="Serviços" showBackButton={true} />
-        <div className="flex-1 page-container flex items-center justify-center">
-          <div className="text-center">
-            <h2 className="text-xl font-semibold mb-2">Acesso Negado</h2>
-            <p className="text-gray-600">Você não tem permissão para visualizar os serviços.</p>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
-
-=======
->>>>>>> 3e894965b0d555e42b6cce9114cc89725195ce25
   return (
     <div className="flex flex-col min-h-screen">
       <Header
@@ -96,18 +73,8 @@ const ServicesPage: React.FC = () => {
               <ServiceCard
                 key={service.id}
                 service={service}
-<<<<<<< HEAD
                 selectable={true}
                 onRedirectToBooking={handleRedirectToBooking}
-=======
-                selectable={!!(isProfessional || isAdmin)}
-                onSelect={() => {
-                  // Só profissionais e admins podem abrir tela de edição (exemplo didático de acesso)
-                  if (isProfessional || isAdmin) {
-                    navigate(`/servicos/${service.id}`);
-                  }
-                }}
->>>>>>> 3e894965b0d555e42b6cce9114cc89725195ce25
               />
             ))}
           </div>
