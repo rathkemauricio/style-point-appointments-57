@@ -16,10 +16,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const { user } = useAuth();
   const [settings, setSettings] = useState<UserSettings | null>(null);
 
-  // Função para aplicar tema e dark mode global
+  // Função para aplicar tema
   const applyThemeSettings = (stgs: UserSettings) => {
     if (stgs?.theme) {
-      userSettingsService.applyColorTheme(stgs.theme);
+      userSettingsService.applyTheme(stgs.theme);
     }
   };
 
@@ -31,10 +31,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setSettings(savedSettings);
         applyThemeSettings(savedSettings);
       } else {
-        // Caso nunca tenha settings, seta padrão (inclusive dark/light)
+        // Caso nunca tenha settings, seta padrão
         const defaultSettings: UserSettings = {
           userId: user.id,
-          theme: { colorTheme: 0, isDarkMode: false },
+          theme: { isDarkMode: false },
           notifications: {
             enabled: true,
             appointments: true,
@@ -61,7 +61,6 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const updated = {
       ...settings,
       theme: {
-        ...settings.theme,
         isDarkMode: isDark,
       },
     };

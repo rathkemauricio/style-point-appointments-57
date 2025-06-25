@@ -1,7 +1,7 @@
+
 export interface UserSettings {
   userId: string;
   theme: {
-    colorTheme: number;
     isDarkMode: boolean;
   };
   notifications: {
@@ -22,4 +22,4 @@ export interface UserSettings {
       sunday: boolean;
     };
   };
-} 
+}

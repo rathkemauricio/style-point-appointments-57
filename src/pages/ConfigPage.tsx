@@ -20,10 +20,7 @@ const ConfigPage: React.FC = () => {
           {/* Aparência */}
           <AppearanceSection
             darkMode={state.darkMode}
-            canCustomizeAppearance={state.canCustomizeAppearance}
-            selectedColorTheme={state.selectedColorTheme}
             onToggleDarkMode={state.handleToggleDarkMode}
-            onApplyColorTheme={state.handleApplyColorTheme}
           />
           {/* Notificações */}
           <NotificationSection

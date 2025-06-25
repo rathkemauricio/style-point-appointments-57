@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { useSettings } from '@/hooks/use-settings';
 import { UserSettings } from '@/models/user-settings.model';
@@ -21,16 +21,13 @@ export const useConfigState = () => {
   const [workDays, setWorkDays] = useState(settings?.workHours?.workDays || {
     monday: true, tuesday: true, wednesday: true, thursday: true, friday: true, saturday: true, sunday: false,
   });
-  const [selectedColorTheme, setSelectedColorTheme] = useState(settings?.theme.colorTheme || 0);
 
   const isProfessional = user?.role === 'professional';
   const isAdmin = user?.role === 'admin';
-  const canCustomizeAppearance = isProfessional || isAdmin;
 
   useEffect(() => {
     if (settings) {
       setDarkModeLocal(settings.theme.isDarkMode);
-      if (canCustomizeAppearance) setSelectedColorTheme(settings.theme.colorTheme);
       setNotificationsEnabled(settings.notifications.enabled);
       setAppointmentReminders(settings.notifications.appointments);
       setReviewNotifications(settings.notifications.reviews);
@@ -40,8 +37,7 @@ export const useConfigState = () => {
         setWorkDays(settings.workHours.workDays);
       }
     }
-    // eslint-disable-next-line
-  }, [settings, canCustomizeAppearance, isProfessional]);
+  }, [settings, isProfessional]);
 
   // Funções handlers para cada grupo de configurações
   const saveSettings = () => {
@@ -49,7 +45,6 @@ export const useConfigState = () => {
     const newSettings: UserSettings = {
       userId: user.id,
       theme: {
-        colorTheme: canCustomizeAppearance ? selectedColorTheme : 0,
         isDarkMode: darkMode
       },
       notifications: {
@@ -69,30 +64,6 @@ export const useConfigState = () => {
     toast({
       title: "Tema alterado",
       description: `Modo ${newDarkMode ? "escuro" : "claro"} ativado`,
-    });
-  };
-
-  const handleApplyColorTheme = (index: number) => {
-    setSelectedColorTheme(index);
-    if (user?.id) {
-      const newSettings: UserSettings = {
-        userId: user.id,
-        theme: {
-          colorTheme: index,
-          isDarkMode: darkMode
-        },
-        notifications: {
-          enabled: notificationsEnabled,
-          appointments: appointmentReminders,
-          reviews: reviewNotifications
-        },
-        workHours: isProfessional ? { startTime, endTime, workDays } : undefined,
-      };
-      updateSettings(newSettings);
-    }
-    toast({
-      title: "Tema de cores alterado",
-      description: `Tema aplicado com sucesso`,
     });
   };
 
@@ -144,13 +115,13 @@ export const useConfigState = () => {
     // Estado dos settings
     user, isAuthenticated, isProfessional, isAdmin,
     // Aparência
-    canCustomizeAppearance, darkMode, selectedColorTheme,
+    darkMode,
     // Notificações
     notificationsEnabled, appointmentReminders, reviewNotifications,
     // Agenda
     workDays, startTime, endTime,
     // Actions
-    handleToggleDarkMode, handleApplyColorTheme,
+    handleToggleDarkMode,
     handleToggleNotifications, handleToggleAppointments, handleToggleReviews,
     handleToggleWorkDay, handleStartTimeChange, handleEndTimeChange, handleSaveWorkHours,
     handleLogout

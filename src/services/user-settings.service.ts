@@ -1,3 +1,4 @@
+
 import { UserSettings } from '../models/user-settings.model';
 
 class UserSettingsService {
@@ -43,24 +44,9 @@ class UserSettingsService {
   }
 
   /**
-   * Aplicar tema de cores
+   * Aplicar apenas o dark mode
    */
-  applyColorTheme(theme: UserSettings['theme']): void {
-    const colors = [
-      { primary: '#C4804E', secondary: '#FBE6D4', accent: '#8B4513' }, // Caramelo
-      { primary: '#8B4513', secondary: '#2C1810', accent: '#C4804E' }, // Marrom escuro
-      { primary: '#A0522D', secondary: '#DEB887', accent: '#8B4513' }, // Marrom médio
-      { primary: '#D2691E', secondary: '#FFE4C4', accent: '#8B4513' }, // Marrom claro
-      { primary: '#CD853F', secondary: '#F5DEB3', accent: '#8B4513' }, // Caramelo dourado
-    ];
-
-    const selectedTheme = colors[theme.colorTheme];
-    if (selectedTheme) {
-      document.documentElement.style.setProperty('--primary-color', selectedTheme.primary);
-      document.documentElement.style.setProperty('--secondary-color', selectedTheme.secondary);
-      document.documentElement.style.setProperty('--accent-color', selectedTheme.accent);
-    }
-
+  applyTheme(theme: UserSettings['theme']): void {
     if (theme.isDarkMode) {
       document.documentElement.classList.add('dark');
     } else {
@@ -69,4 +55,4 @@ class UserSettingsService {
   }
 }
 
-export default new UserSettingsService(); 
+export default new UserSettingsService();
