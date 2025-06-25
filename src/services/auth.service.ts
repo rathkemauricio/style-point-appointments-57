@@ -1,4 +1,3 @@
-
 import { BaseService } from './base.service';
 import appConfig from '../config/appConfig';
 import { LoginCredentials, LoginResponse, AuthUser } from '../models/auth.model';
@@ -227,6 +226,7 @@ class AuthService extends BaseService {
       return null;
     }
   }
+
   
   /**
    * Logout do usuário atual

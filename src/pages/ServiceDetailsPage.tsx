@@ -23,6 +23,11 @@ const ServiceDetailsPage: React.FC = () => {
     navigate('/agendar', { state: { preSelectedService: service } });
   };
 
+  // Helper function to get duration value
+  const getDuration = (service: any) => {
+    return service.duration || service.durationMinutes || 0;
+  };
+
   if (isLoading) {
     return (
       <div className="flex flex-col min-h-screen">
@@ -72,7 +77,7 @@ const ServiceDetailsPage: React.FC = () => {
               <p className="text-2xl font-bold text-primary">
                 {formatCurrency(service.price)}
               </p>
-              <p className="text-gray-500 text-sm">{service.duration} min</p>
+              <p className="text-gray-500 text-sm">{getDuration(service)} min</p>
             </div>
           </div>
           
@@ -81,7 +86,7 @@ const ServiceDetailsPage: React.FC = () => {
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="text-gray-500">Duração:</span>
-                <p>{service.duration} minutos</p>
+                <p>{getDuration(service)} minutos</p>
               </div>
               <div>
                 <span className="text-gray-500">Preço:</span>
