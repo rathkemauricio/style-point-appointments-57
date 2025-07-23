@@ -45,6 +45,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         applyThemeSettings(defaultSettings);
         userSettingsService.saveSettings(defaultSettings);
       }
+    } else {
+      // Para usuários não logados, aplicar tema claro por padrão
+      const defaultTheme = { isDarkMode: false };
+      applyThemeSettings({ theme: defaultTheme } as UserSettings);
     }
   }, [user]);
 

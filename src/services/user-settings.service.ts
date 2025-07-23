@@ -47,10 +47,13 @@ class UserSettingsService {
    * Aplicar apenas o dark mode
    */
   applyTheme(theme: UserSettings['theme']): void {
+    const html = document.documentElement;
     if (theme.isDarkMode) {
-      document.documentElement.classList.add('dark');
+      html.classList.add('dark');
+      html.setAttribute('data-theme', 'dark');
     } else {
-      document.documentElement.classList.remove('dark');
+      html.classList.remove('dark');
+      html.setAttribute('data-theme', 'light');
     }
   }
 }

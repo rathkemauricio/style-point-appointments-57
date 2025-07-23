@@ -139,6 +139,7 @@ const PortalServicesPage: React.FC = () => {
         const serviceData = {
           name: data.name,
           price: data.price,
+          duration: data.durationMinutes,
           durationMinutes: data.durationMinutes,
           isActive: true,
           description: data.description,
