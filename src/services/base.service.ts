@@ -1,100 +1,74 @@
 
-import { toast } from 'sonner';
-import authService from './auth.service';
-
-export interface RequestConfig {
-  requiresAuth?: boolean;
-  timeout?: number;
-  headers?: Record<string, string>;
-}
-
-export interface ApiResponse<T = any> {
-  data: T;
-  message?: string;
-  status: number;
-}
+import { API_CONFIG, createApiHeaders } from '../config/api.config';
 
 export class BaseService {
-  private baseUrl: string;
-  private timeout: number;
+  protected baseURL: string;
 
-  constructor(baseUrl: string = '', timeout: number = 10000) {
-    this.baseUrl = baseUrl;
-    this.timeout = timeout;
+  constructor() {
+    this.baseURL = API_CONFIG.BASE_URL;
   }
 
-  private getAuthHeaders(): Record<string, string> {
-    const token = authService.getToken();
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  }
-
-  private async makeRequest<T>(
+  protected async request<T>(
     endpoint: string,
-    options: RequestInit,
-    config: RequestConfig = {}
-  ): Promise<ApiResponse<T>> {
-    const url = `${this.baseUrl}${endpoint}`;
-    const headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      ...(config.requiresAuth ? this.getAuthHeaders() : {}),
-      ...config.headers,
+    options: RequestInit = {}
+  ): Promise<T> {
+    const token = this.getAuthToken();
+    
+    const config: RequestInit = {
+      ...options,
+      headers: {
+        ...createApiHeaders(token),
+        ...options.headers,
+      },
     };
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), config.timeout || this.timeout);
-
     try {
-      const response = await fetch(url, {
-        ...options,
-        headers,
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
+      const response = await fetch(`${this.baseURL}${endpoint}`, config);
+      
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.message || `HTTP ${response.status}`;
-        throw new Error(errorMessage);
+        if (response.status === 401) {
+          this.handleUnauthorized();
+        }
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
       const data = await response.json();
-      return {
-        data,
-        message: data.message,
-        status: response.status,
-      };
-    } catch (error: any) {
-      clearTimeout(timeoutId);
-      
-      if (error.name === 'AbortError') {
-        throw new Error('Request timeout');
-      }
-      
+      return data;
+    } catch (error) {
+      console.error(`API Error on ${endpoint}:`, error);
       throw error;
     }
   }
 
-  protected async get<T>(endpoint: string, config?: RequestConfig): Promise<ApiResponse<T>> {
-    return this.makeRequest<T>(endpoint, { method: 'GET' }, config);
+  protected async get<T>(endpoint: string): Promise<T> {
+    return this.request<T>(endpoint, { method: 'GET' });
   }
 
-  protected async post<T>(endpoint: string, data?: any, config?: RequestConfig): Promise<ApiResponse<T>> {
-    return this.makeRequest<T>(endpoint, {
+  protected async post<T>(endpoint: string, data?: any): Promise<T> {
+    return this.request<T>(endpoint, {
       method: 'POST',
       body: data ? JSON.stringify(data) : undefined,
-    }, config);
+    });
   }
 
-  protected async put<T>(endpoint: string, data?: any, config?: RequestConfig): Promise<ApiResponse<T>> {
-    return this.makeRequest<T>(endpoint, {
+  protected async put<T>(endpoint: string, data: any): Promise<T> {
+    return this.request<T>(endpoint, {
       method: 'PUT',
-      body: data ? JSON.stringify(data) : undefined,
-    }, config);
+      body: JSON.stringify(data),
+    });
   }
 
-  protected async delete<T>(endpoint: string, config?: RequestConfig): Promise<ApiResponse<T>> {
-    return this.makeRequest<T>(endpoint, { method: 'DELETE' }, config);
+  protected async delete<T>(endpoint: string): Promise<T> {
+    return this.request<T>(endpoint, { method: 'DELETE' });
+  }
+
+  protected getAuthToken(): string | null {
+    return localStorage.getItem('auth_token');
+  }
+
+  protected handleUnauthorized(): void {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_user');
+    window.location.href = '/login';
   }
 }

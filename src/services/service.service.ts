@@ -1,72 +1,39 @@
 
+import { BaseService } from './base.service';
+import { API_ENDPOINTS } from '../config/api.config';
 import { Service } from '../models/service.model';
-import { mockServices } from '../mocks/mockData';
 
-class ServiceService {
-  private services: Service[] = [...mockServices];
-  
+class ServiceService extends BaseService {
   async getServices(): Promise<Service[]> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(this.services);
-      }, 500);
-    });
+    return this.get<Service[]>(API_ENDPOINTS.SERVICES);
   }
-  
-  async getServiceById(id: string): Promise<Service | undefined> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const service = this.services.find((s) => s.id === id);
-        resolve(service);
-      }, 300);
-    });
+
+  async getAllServices(): Promise<Service[]> {
+    return this.getServices();
   }
-  
-  async createService(service: Omit<Service, 'id'>): Promise<Service> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const newService: Service = {
-          id: `service-${Date.now()}`,
-          ...service
-        };
-        
-        this.services.push(newService);
-        resolve(newService);
-      }, 300);
-    });
+
+  async getServiceById(id: string): Promise<Service> {
+    return this.get<Service>(`${API_ENDPOINTS.SERVICES}/${id}`);
   }
-  
-  async updateService(id: string, data: Partial<Service>): Promise<Service> {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const index = this.services.findIndex((s) => s.id === id);
-        if (index === -1) {
-          reject(new Error('Service not found'));
-          return;
-        }
-        
-        this.services[index] = {
-          ...this.services[index],
-          ...data
-        };
-        
-        resolve(this.services[index]);
-      }, 300);
-    });
+
+  async createService(serviceData: Omit<Service, 'id'>): Promise<Service> {
+    return this.post<Service>(API_ENDPOINTS.SERVICES, serviceData);
   }
-  
-  async deleteService(id: string): Promise<boolean> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const index = this.services.findIndex((s) => s.id === id);
-        if (index !== -1) {
-          this.services.splice(index, 1);
-          resolve(true);
-        } else {
-          resolve(false);
-        }
-      }, 300);
-    });
+
+  async updateService(id: string, serviceData: Partial<Service>): Promise<Service> {
+    return this.put<Service>(`${API_ENDPOINTS.SERVICES}/${id}`, serviceData);
+  }
+
+  async deleteService(id: string): Promise<void> {
+    return this.delete<void>(`${API_ENDPOINTS.SERVICES}/${id}`);
+  }
+
+  async getActiveServices(): Promise<Service[]> {
+    return this.get<Service[]>(`${API_ENDPOINTS.SERVICES}?active=true`);
+  }
+
+  async getServicesByCategory(category: string): Promise<Service[]> {
+    return this.get<Service[]>(`${API_ENDPOINTS.SERVICES}?category=${category}`);
   }
 }
 

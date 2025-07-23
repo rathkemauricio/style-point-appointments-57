@@ -1,164 +1,96 @@
-import { Appointment, AppointmentStatus, AppointmentStats, TimeSlot } from '../models/appointment.model';
-import { mockAppointments } from '../mocks/mockData';
-import { format, addDays, isBefore, startOfDay, endOfDay } from 'date-fns';
+import { BaseService } from './base.service';
+import { API_ENDPOINTS } from '../config/api.config';
+import { Appointment } from '../models/appointment.model';
+import { CreateAppointmentDTO, UpdateAppointmentDTO } from '../models/dto/appointment.dto';
 
-class AppointmentService {
-  private appointments: Appointment[] = [...mockAppointments];
-  
+class AppointmentService extends BaseService {
   async getAppointments(startDate?: string, endDate?: string): Promise<Appointment[]> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        let filteredAppointments = this.appointments;
-        
-        if (startDate && endDate) {
-          filteredAppointments = this.appointments.filter(
-            appointment => appointment.date >= startDate && appointment.date <= endDate
-          );
-        }
-        
-        resolve(filteredAppointments);
-      }, 500);
-    });
+    const params = new URLSearchParams();
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+    
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return this.get<Appointment[]>(`${API_ENDPOINTS.APPOINTMENTS}${query}`);
   }
-  
-  async getAppointmentsByCustomer(customerId: string): Promise<Appointment[]> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const customerAppointments = this.appointments.filter(
-          (appointment) => appointment.customerId === customerId
-        );
-        resolve(customerAppointments);
-      }, 300);
-    });
+
+  async getAllAppointments(): Promise<Appointment[]> {
+    return this.getAppointments();
+  }
+
+  async getAppointmentById(id: string): Promise<Appointment> {
+    return this.get<Appointment>(`${API_ENDPOINTS.APPOINTMENTS}/${id}`);
+  }
+
+  async getAppointmentsByDate(date: string): Promise<Appointment[]> {
+    return this.get<Appointment[]>(`${API_ENDPOINTS.APPOINTMENTS_BY_DATE}?date=${date}`);
+  }
+
+  async getAppointmentsByProfessional(professionalId: string): Promise<Appointment[]> {
+    return this.get<Appointment[]>(`${API_ENDPOINTS.APPOINTMENTS_BY_PROFESSIONAL}/${professionalId}`);
   }
 
   async getAppointmentsByProfessionalId(professionalId: string, startDate: string, endDate: string): Promise<Appointment[]> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const professionalAppointments = this.appointments.filter(
-          (appointment) => 
-            appointment.professionalId === professionalId &&
-            appointment.date >= startDate &&
-            appointment.date <= endDate
-        );
-        resolve(professionalAppointments);
-      }, 300);
-    });
+    return this.get<Appointment[]>(`${API_ENDPOINTS.APPOINTMENTS_BY_PROFESSIONAL}/${professionalId}?startDate=${startDate}&endDate=${endDate}`);
   }
 
-  async getAppointmentsByDate(date: Date): Promise<Appointment[]> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const dayStart = startOfDay(date);
-        const dayEnd = endOfDay(date);
-        
-        const dayAppointments = this.appointments.filter((appointment) => {
-          const appointmentDate = new Date(appointment.date);
-          return appointmentDate >= dayStart && appointmentDate <= dayEnd;
-        });
-        
-        resolve(dayAppointments);
-      }, 300);
-    });
-  }
-  
-  async getAppointmentsByDateRange(startDate: Date, endDate: Date): Promise<Appointment[]> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const rangeAppointments = this.appointments.filter((appointment) => {
-          const appointmentDate = new Date(appointment.date);
-          return appointmentDate >= startDate && appointmentDate <= endDate;
-        });
-        
-        resolve(rangeAppointments);
-      }, 300);
-    });
-  }
-  
-  async getAppointmentById(id: string): Promise<Appointment | undefined> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const appointment = this.appointments.find((a) => a.id === id);
-        resolve(appointment);
-      }, 300);
-    });
-  }
-  
-  async updateAppointmentStatus(id: string, status: AppointmentStatus): Promise<Appointment> {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const index = this.appointments.findIndex((a) => a.id === id);
-        if (index === -1) {
-          reject(new Error('Appointment not found'));
-          return;
-        }
-        
-        this.appointments[index] = {
-          ...this.appointments[index],
-          status
-        };
-        
-        resolve(this.appointments[index]);
-      }, 300);
-    });
-  }
-  
-  async createAppointment(appointment: Omit<Appointment, 'id'>): Promise<Appointment> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const newAppointment: Appointment = {
-          id: `appointment-${Date.now()}`,
-          ...appointment
-        };
-        
-        this.appointments.push(newAppointment);
-        resolve(newAppointment);
-      }, 300);
-    });
+  async getAppointmentsByCustomer(customerId: string): Promise<Appointment[]> {
+    return this.get<Appointment[]>(`${API_ENDPOINTS.APPOINTMENTS}?customerId=${customerId}`);
   }
 
-  async getStats(startDate: string, endDate: string): Promise<AppointmentStats> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const periodAppointments = this.appointments.filter(
-          appointment => appointment.date >= startDate && appointment.date <= endDate
-        );
-
-        const stats: AppointmentStats = {
-          total: periodAppointments.length,
-          revenue: periodAppointments.reduce((sum, apt) => sum + (apt.totalPrice || 0), 0),
-          completed: periodAppointments.filter(apt => apt.status === 'completed').length
-        };
-
-        resolve(stats);
-      }, 300);
-    });
+  async createAppointment(appointmentData: CreateAppointmentDTO): Promise<Appointment> {
+    return this.post<Appointment>(API_ENDPOINTS.APPOINTMENTS, appointmentData);
   }
 
-  async getAvailability(date: string, professionalId: string): Promise<TimeSlot[]> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        // Mock de horários disponíveis
-        const slots: TimeSlot[] = [];
-        const startHour = 8;
-        const endHour = 18;
-        
-        for (let hour = startHour; hour < endHour; hour++) {
-          for (let minute = 0; minute < 60; minute += 30) {
-            const startTime = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-            const isAvailable = Math.random() > 0.3; // 70% de chance de estar disponível
-            
-            slots.push({
-              startTime,
-              endTime: `${hour.toString().padStart(2, '0')}:${(minute + 30).toString().padStart(2, '0')}`,
-              isAvailable
-            });
-          }
-        }
-        
-        resolve(slots);
-      }, 300);
+  async updateAppointment(id: string, appointmentData: UpdateAppointmentDTO): Promise<Appointment> {
+    return this.put<Appointment>(`${API_ENDPOINTS.APPOINTMENTS}/${id}`, appointmentData);
+  }
+
+  async updateAppointmentStatus(id: string, status: string): Promise<Appointment> {
+    return this.put<Appointment>(`${API_ENDPOINTS.APPOINTMENTS}/${id}/status`, { status });
+  }
+
+  async cancelAppointment(id: string, reason?: string): Promise<Appointment> {
+    return this.put<Appointment>(`${API_ENDPOINTS.APPOINTMENTS}/${id}/cancel`, { reason });
+  }
+
+  async confirmAppointment(id: string): Promise<Appointment> {
+    return this.put<Appointment>(`${API_ENDPOINTS.APPOINTMENTS}/${id}/confirm`, {});
+  }
+
+  async completeAppointment(id: string, notes?: string): Promise<Appointment> {
+    return this.put<Appointment>(`${API_ENDPOINTS.APPOINTMENTS}/${id}/complete`, { notes });
+  }
+
+  async deleteAppointment(id: string): Promise<void> {
+    return this.delete<void>(`${API_ENDPOINTS.APPOINTMENTS}/${id}`);
+  }
+
+  async getAvailableSlots(
+    professionalId: string,
+    date: string,
+    serviceId: string
+  ): Promise<string[]> {
+    return this.get<string[]>(
+      `${API_ENDPOINTS.APPOINTMENTS}/available-slots?professionalId=${professionalId}&date=${date}&serviceId=${serviceId}`
+    );
+  }
+
+  async getAvailability(date: string, professionalId: string): Promise<any[]> {
+    return this.getAvailableSlots(professionalId, date, '');
+  }
+
+  async getAppointmentsByDateRange(startDate: string, endDate: string, professionalId?: string): Promise<Appointment[]> {
+    const params = new URLSearchParams({
+      startDate,
+      endDate,
+      ...(professionalId && { professionalId }),
     });
+    
+    return this.get<Appointment[]>(`${API_ENDPOINTS.APPOINTMENTS}?${params.toString()}`);
+  }
+
+  async getStats(startDate: string, endDate: string): Promise<any> {
+    return this.get<any>(`${API_ENDPOINTS.STATS}?startDate=${startDate}&endDate=${endDate}`);
   }
 }
 

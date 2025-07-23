@@ -1,66 +1,42 @@
-import ApiService from './api.service';
-import appConfig from '../config/appConfig';
+import { BaseService } from './base.service';
+import { API_ENDPOINTS } from '../config/api.config';
 import { Professional } from '../models/professional.model';
 
-// Import mock data for development
-import { mockProfessionals } from '../mocks/mockData';
-
-class ProfessionalService {
-  private api: ApiService;
-  
-  constructor() {
-    this.api = new ApiService(appConfig.api.baseUrl, appConfig.api.timeout);
-  }
-  
-  /**
-   * Get all professionals
-   */
+class ProfessionalService extends BaseService {
   async getProfessionals(): Promise<Professional[]> {
-    try {
-      // In a real app, we'd call the API
-      // const response = await this.api.get('/professionals');
-      
-      // For development, we're using mock data
-      return mockProfessionals.filter(p => p.isActive);
-    } catch (error) {
-      console.error('Failed to fetch professionals:', error);
-      return [];
-    }
+    return this.get<Professional[]>(API_ENDPOINTS.PROFESSIONALS);
   }
-  
-  /**
-   * Get professional by ID
-   */
-  async getProfessionalById(id: string): Promise<Professional | null> {
-    try {
-      // In a real app, we'd call the API
-      // const response = await this.api.get(`/professionals/${id}`);
-      
-      // For development, we're using mock data
-      const professional = mockProfessionals.find(p => p.id === id);
-      return professional || null;
-    } catch (error) {
-      console.error(`Failed to fetch professional ${id}:`, error);
-      return null;
-    }
+
+  async getAllProfessionals(): Promise<Professional[]> {
+    return this.getProfessionals();
   }
-  
-  /**
-   * Cadastra um novo barbeiro (professional)
-   */
-  async createProfessional(data: Omit<Professional, 'id'>): Promise<Professional> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const newProfessional: Professional = {
-          ...data,
-          id: `barber-${Date.now()}`
-        };
-        // Simulação de cadastro no mock
-        // @ts-ignore
-        mockProfessionals.push(newProfessional);
-        resolve(newProfessional);
-      }, 300);
-    });
+
+  async getProfessionalById(id: string): Promise<Professional> {
+    return this.get<Professional>(`${API_ENDPOINTS.PROFESSIONALS}/${id}`);
+  }
+
+  async getActiveProfessionals(): Promise<Professional[]> {
+    return this.get<Professional[]>(`${API_ENDPOINTS.PROFESSIONALS}?active=true`);
+  }
+
+  async createProfessional(professionalData: Omit<Professional, 'id'>): Promise<Professional> {
+    return this.post<Professional>(API_ENDPOINTS.PROFESSIONALS, professionalData);
+  }
+
+  async updateProfessional(id: string, professionalData: Partial<Professional>): Promise<Professional> {
+    return this.put<Professional>(`${API_ENDPOINTS.PROFESSIONALS}/${id}`, professionalData);
+  }
+
+  async deleteProfessional(id: string): Promise<void> {
+    return this.delete<void>(`${API_ENDPOINTS.PROFESSIONALS}/${id}`);
+  }
+
+  async getProfessionalServices(professionalId: string): Promise<any[]> {
+    return this.get<any[]>(`${API_ENDPOINTS.PROFESSIONALS}/${professionalId}/services`);
+  }
+
+  async getProfessionalStats(professionalId: string): Promise<any> {
+    return this.get<any>(`${API_ENDPOINTS.PROFESSIONALS}/${professionalId}/stats`);
   }
 }
 
