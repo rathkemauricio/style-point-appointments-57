@@ -85,10 +85,10 @@ class AuthService extends BaseService {
         email: 'joao@barbearia.com',
         password: '123456',
         user: {
-          id: 'user-prof-1',
+          id: 'user-prof-2',
           email: 'joao@barbearia.com',
           role: 'professional' as const,
-          professionalId: mockProfessionals[0].id,
+          professionalId: 'prof-2',
         }
       }
     ];
@@ -111,31 +111,8 @@ class AuthService extends BaseService {
       return response;
     }
 
-    // Fallback para lógica anterior (busca por profissional)
-    const professional = mockProfessionals.find(p =>
-      `${p.name.toLowerCase().replace(/\s/g, '')}@barbearia.com` === credentials.email);
-
-    if (!professional) {
-      throw new Error('Credenciais inválidas');
-    }
-
-    const authUser: AuthUser = {
-      id: `user-${professional.id}`,
-      email: credentials.email,
-      role: 'professional',
-      professionalId: professional.id,
-    };
-
-    const response: LoginResponse = {
-      user: authUser,
-      token: `mock-token-${Date.now()}`
-    };
-
-    // Salva na localStorage
-    localStorage.setItem(this.TOKEN_KEY, response.token);
-    localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
-
-    return response;
+    // Fallback desabilitado pois mockProfessionals está vazio
+    return null;
   }
 
   /**

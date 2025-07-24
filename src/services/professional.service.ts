@@ -3,8 +3,28 @@ import { API_ENDPOINTS } from '../config/api.config';
 import { Professional } from '../models/professional.model';
 
 class ProfessionalService extends BaseService {
+  // Mock data para testes quando API não estiver disponível
+  private getMockProfessional(id: string): Professional {
+    return {
+      id: id,
+      name: 'João Silva',
+      title: 'Barbeiro Profissional',
+      email: 'barbeiro@barbearia.com',
+      phone: '(11) 99999-9999',
+      bio: 'Barbeiro profissional com mais de 10 anos de experiência',
+      avatarUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+      serviceIds: ['service-1', 'service-2'],
+      isActive: true
+    };
+  }
+
   async getProfessionals(): Promise<Professional[]> {
-    return this.get<Professional[]>(API_ENDPOINTS.PROFESSIONALS);
+    try {
+      return await this.get<Professional[]>(API_ENDPOINTS.PROFESSIONALS);
+    } catch (error) {
+      console.log('API não disponível, usando dados mock para professionals');
+      return [this.getMockProfessional('prof-1'), this.getMockProfessional('prof-2')];
+    }
   }
 
   async getAllProfessionals(): Promise<Professional[]> {
@@ -12,7 +32,12 @@ class ProfessionalService extends BaseService {
   }
 
   async getProfessionalById(id: string): Promise<Professional> {
-    return this.get<Professional>(`${API_ENDPOINTS.PROFESSIONALS}/${id}`);
+    try {
+      return await this.get<Professional>(`${API_ENDPOINTS.PROFESSIONALS}/${id}`);
+    } catch (error) {
+      console.log('API não disponível, usando dados mock para professional');
+      return this.getMockProfessional(id);
+    }
   }
 
   async getActiveProfessionals(): Promise<Professional[]> {
