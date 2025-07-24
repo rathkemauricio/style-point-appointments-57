@@ -20,15 +20,14 @@ class AuthService extends BaseService {
       // Primeiro, tenta fazer login na API real
       const response = await this.post<LoginResponse>(
         API_ENDPOINTS.AUTH.LOGIN,
-        credentials,
-        { requiresAuth: false } // Login não requer autenticação
+        credentials
       );
 
-      if (response.data && response.data.user && response.data.token) {
+      if (response && response.user && response.token) {
         // Login bem-sucedido na API
         const loginResponse: LoginResponse = {
-          user: response.data.user,
-          token: response.data.token
+          user: response.user,
+          token: response.token
         };
         
         // Salva na localStorage
@@ -152,15 +151,14 @@ class AuthService extends BaseService {
     try {
       const response = await this.post<LoginResponse>(
         API_ENDPOINTS.AUTH.REGISTER,
-        userData,
-        { requiresAuth: false }
+        userData
       );
 
-      if (response.data && response.data.user && response.data.token) {
+      if (response && response.user && response.token) {
         // Registro bem-sucedido na API
         const loginResponse: LoginResponse = {
-          user: response.data.user,
-          token: response.data.token
+          user: response.user,
+          token: response.token
         };
 
         // Salva na localStorage
@@ -186,14 +184,13 @@ class AuthService extends BaseService {
       if (!token) return null;
 
       const response = await this.get<{ user: AuthUser }>(
-        API_ENDPOINTS.AUTH.ME,
-        { requiresAuth: true }
+        API_ENDPOINTS.AUTH.ME
       );
 
-      if (response.data && response.data.user) {
+      if (response && response.user) {
         // Atualiza os dados do usuário no localStorage
-        localStorage.setItem(this.USER_KEY, JSON.stringify(response.data.user));
-        return response.data.user;
+        localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
+        return response.user;
       }
 
       return null;
@@ -211,13 +208,12 @@ class AuthService extends BaseService {
     try {
       const response = await this.post<{ token: string }>(
         API_ENDPOINTS.AUTH.REFRESH_TOKEN,
-        {},
-        { requiresAuth: false }
+        {}
       );
 
-      if (response.data && response.data.token) {
-        localStorage.setItem(this.TOKEN_KEY, response.data.token);
-        return response.data.token;
+      if (response && response.token) {
+        localStorage.setItem(this.TOKEN_KEY, response.token);
+        return response.token;
       }
 
       return null;

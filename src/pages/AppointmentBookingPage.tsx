@@ -87,10 +87,11 @@ const AppointmentBookingPage: React.FC = () => {
         data.customerId = existingCustomer.id;
       } else {
         // Create new customer
-        const newCustomer = await customerService.createCustomer(
-          data.customerName,
-          data.customerPhone
-        );
+        const newCustomer = await customerService.createCustomer({
+          name: data.customerName,
+          phone: data.customerPhone,
+          email: ''
+        });
 
         if (newCustomer) {
           data.customerId = newCustomer.id;
@@ -101,16 +102,11 @@ const AppointmentBookingPage: React.FC = () => {
       if (!data.customerId) throw new Error('Customer ID is required');
 
       const appointmentData = {
-        date: data.date,
-        startTime: data.startTime,
-        endTime: data.startTime, // Será calculado pelo serviço
         customerId: data.customerId,
-        professionalId: data.professionalId,
-        serviceIds: data.serviceIds,
-        notes: data.notes,
-        status: 'pending' as AppointmentStatus,
-        createdAt: new Date().toISOString(),
-        totalPrice: selectedServices.reduce((total, service) => total + service.price, 0)
+        serviceId: data.serviceIds[0], // Use first service for now
+        date: data.date,
+        time: data.startTime,
+        notes: data.notes
       };
 
       return appointmentService.createAppointment(appointmentData);
