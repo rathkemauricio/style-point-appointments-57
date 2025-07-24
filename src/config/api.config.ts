@@ -69,19 +69,31 @@ export const API_ENDPOINTS = {
         RESET_POINTS: '/fidelity/reset-points',
         DETAILS: (customerId: string) => `/fidelity/customer/${customerId}`,
         HISTORY: (customerId: string) => `/fidelity/customer/${customerId}/history`,
-    }
+    },
+
+    // Professional endpoints
+    PROFESSIONALS: '/professionals',
+
+    // Stats endpoints
+    STATS: '/stats'
 };
 
 /**
  * API configuration
  */
-export const apiConfig = {
-    baseUrl: import.meta.env.VITE_API_URL || 'http://localhost:3333',
-    timeout: 10000, // 10 seconds
-    headers: {
+export const API_CONFIG = {
+    BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:3333',
+    TIMEOUT: 10000, // 10 seconds
+    HEADERS: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     },
+};
+
+export const apiConfig = {
+    baseUrl: API_CONFIG.BASE_URL,
+    timeout: API_CONFIG.TIMEOUT,
+    headers: API_CONFIG.HEADERS,
     endpoints: {
         // Auth
         login: '/auth/login',
@@ -140,4 +152,19 @@ export interface PaginatedResponse<T = any> {
 export interface ApiError {
     message: string;
     [key: string]: any;
-} 
+}
+
+/**
+ * Creates API headers for requests
+ */
+export const createApiHeaders = (token?: string | null): Record<string, string> => {
+    const headers: Record<string, string> = {
+        ...API_CONFIG.HEADERS,
+    };
+
+    if (token) {
+        headers.Authorization = `Bearer ${token}`;
+    }
+
+    return headers;
+};

@@ -10,7 +10,7 @@ class AppointmentService extends BaseService {
     if (endDate) params.append('endDate', endDate);
     
     const query = params.toString() ? `?${params.toString()}` : '';
-    return this.get<Appointment[]>(`${API_ENDPOINTS.APPOINTMENTS}${query}`);
+    return this.get<Appointment[]>(`${API_ENDPOINTS.APPOINTMENTS.LIST}${query}`);
   }
 
   async getAllAppointments(): Promise<Appointment[]> {
@@ -18,51 +18,51 @@ class AppointmentService extends BaseService {
   }
 
   async getAppointmentById(id: string): Promise<Appointment> {
-    return this.get<Appointment>(`${API_ENDPOINTS.APPOINTMENTS}/${id}`);
+    return this.get<Appointment>(API_ENDPOINTS.APPOINTMENTS.DETAILS(id));
   }
 
   async getAppointmentsByDate(date: string): Promise<Appointment[]> {
-    return this.get<Appointment[]>(`${API_ENDPOINTS.APPOINTMENTS_BY_DATE}?date=${date}`);
+    return this.get<Appointment[]>(API_ENDPOINTS.APPOINTMENTS.BY_DATE(date));
   }
 
   async getAppointmentsByProfessional(professionalId: string): Promise<Appointment[]> {
-    return this.get<Appointment[]>(`${API_ENDPOINTS.APPOINTMENTS_BY_PROFESSIONAL}/${professionalId}`);
+    return this.get<Appointment[]>(API_ENDPOINTS.APPOINTMENTS.BY_PROFESSIONAL(professionalId));
   }
 
   async getAppointmentsByProfessionalId(professionalId: string, startDate: string, endDate: string): Promise<Appointment[]> {
-    return this.get<Appointment[]>(`${API_ENDPOINTS.APPOINTMENTS_BY_PROFESSIONAL}/${professionalId}?startDate=${startDate}&endDate=${endDate}`);
+    return this.get<Appointment[]>(`${API_ENDPOINTS.APPOINTMENTS.BY_PROFESSIONAL(professionalId)}?startDate=${startDate}&endDate=${endDate}`);
   }
 
   async getAppointmentsByCustomer(customerId: string): Promise<Appointment[]> {
-    return this.get<Appointment[]>(`${API_ENDPOINTS.APPOINTMENTS}?customerId=${customerId}`);
+    return this.get<Appointment[]>(API_ENDPOINTS.APPOINTMENTS.BY_CUSTOMER(customerId));
   }
 
   async createAppointment(appointmentData: CreateAppointmentDTO): Promise<Appointment> {
-    return this.post<Appointment>(API_ENDPOINTS.APPOINTMENTS, appointmentData);
+    return this.post<Appointment>(API_ENDPOINTS.APPOINTMENTS.CREATE, appointmentData);
   }
 
   async updateAppointment(id: string, appointmentData: UpdateAppointmentDTO): Promise<Appointment> {
-    return this.put<Appointment>(`${API_ENDPOINTS.APPOINTMENTS}/${id}`, appointmentData);
+    return this.put<Appointment>(API_ENDPOINTS.APPOINTMENTS.UPDATE(id), appointmentData);
   }
 
   async updateAppointmentStatus(id: string, status: string): Promise<Appointment> {
-    return this.put<Appointment>(`${API_ENDPOINTS.APPOINTMENTS}/${id}/status`, { status });
+    return this.put<Appointment>(`${API_ENDPOINTS.APPOINTMENTS.BASE}/${id}/status`, { status });
   }
 
   async cancelAppointment(id: string, reason?: string): Promise<Appointment> {
-    return this.put<Appointment>(`${API_ENDPOINTS.APPOINTMENTS}/${id}/cancel`, { reason });
+    return this.put<Appointment>(`${API_ENDPOINTS.APPOINTMENTS.BASE}/${id}/cancel`, { reason });
   }
 
   async confirmAppointment(id: string): Promise<Appointment> {
-    return this.put<Appointment>(`${API_ENDPOINTS.APPOINTMENTS}/${id}/confirm`, {});
+    return this.put<Appointment>(`${API_ENDPOINTS.APPOINTMENTS.BASE}/${id}/confirm`, {});
   }
 
   async completeAppointment(id: string, notes?: string): Promise<Appointment> {
-    return this.put<Appointment>(`${API_ENDPOINTS.APPOINTMENTS}/${id}/complete`, { notes });
+    return this.put<Appointment>(`${API_ENDPOINTS.APPOINTMENTS.BASE}/${id}/complete`, { notes });
   }
 
   async deleteAppointment(id: string): Promise<void> {
-    return this.delete<void>(`${API_ENDPOINTS.APPOINTMENTS}/${id}`);
+    return this.delete<void>(API_ENDPOINTS.APPOINTMENTS.DELETE(id));
   }
 
   async getAvailableSlots(

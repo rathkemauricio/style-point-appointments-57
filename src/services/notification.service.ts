@@ -1,6 +1,4 @@
 
-import ApiService from './api.service';
-import appConfig from '../config/appConfig';
 import { Notification } from '../models/notification.model';
 import authService from './auth.service';
 
@@ -39,10 +37,8 @@ const mockNotifications: Notification[] = [
 ];
 
 class NotificationService {
-  private api: ApiService;
-  
   constructor() {
-    this.api = new ApiService(appConfig.api.baseUrl, appConfig.api.timeout);
+    // No constructor initialization needed for mock service
   }
   
   /**
